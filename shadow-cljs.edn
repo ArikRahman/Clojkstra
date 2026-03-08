@@ -8,6 +8,6 @@
  :builds
  {:app {:target     :browser
         :output-dir "docs/cljs-out"
-        :asset-path "/cljs-out"
+        :asset-path "cljs-out"
         :modules    {:main {:init-fn clojkstra.app.core/init}}
         :devtools   {:after-load clojkstra.app.core/on-reload}}}}
