@@ -23,6 +23,28 @@
         # ---------------------------------------------------------------------------
         bun = pkgs.bun;
 
+        # Tauri v2 on Linux requires a set of system libraries for WebKit / GTK.
+        tauriLinuxDeps = with pkgs; [
+          pkg-config
+          gobject-introspection
+          gtk3
+          glib
+          gdk-pixbuf
+          pango
+          cairo
+          atk
+          webkitgtk_4_1   # WebKit2GTK 4.1 — required by Tauri v2
+          libsoup_3
+          openssl
+          libayatana-appindicator
+          librsvg
+          xdotool            # optional but handy for window automation in tests
+          xorg.libX11
+          xorg.libXcursor
+          xorg.libXrandr
+          xorg.libXi
+        ];
+
       in
       {
         # ---------------------------------------------------------------------------
@@ -39,8 +61,20 @@
 
           buildInputs = [
             # --- Language runtimes ---
-              jdk
-              bun
+            jdk
+            bun
+
+            # --- Rust toolchain (needed by cargo-tauri / src-tauri) ---
+            pkgs.rustc
+            pkgs.cargo
+            pkgs.rustfmt
+            pkgs.clippy
+
+            # --- Tauri CLI ---
+            pkgs.cargo-tauri
+
+            # --- Tauri system dependencies (Linux only) ---
+          ] ++ (pkgs.lib.optionals pkgs.stdenv.isLinux tauriLinuxDeps) ++ [
 
             # --- Utilities ---
             pkgs.git
@@ -48,10 +82,26 @@
             pkgs.jq            # JSON pretty-printing / querying
             pkgs.clj-kondo     # ClojureScript linter
             pkgs.cljfmt        # ClojureScript formatter
+            pkgs.just          # task runner used by justfile
           ];
 
           # Ensure the JVM used by shadow-cljs is the pinned one.
           JAVA_HOME = jdk;
+
+          # pkg-config needs to find the Tauri system libs.
+          PKG_CONFIG_PATH = pkgs.lib.optionalString pkgs.stdenv.isLinux (
+            pkgs.lib.makeSearchPathOutput "dev" "lib/pkgconfig" tauriLinuxDeps
+          );
+
+          # GIO_MODULE_DIR is required by WebKit on some NixOS setups.
+          GIO_MODULE_DIR = pkgs.lib.optionalString pkgs.stdenv.isLinux
+            "${pkgs.glib-networking}/lib/gio/modules";
+
+          # Point Rust to OpenSSL headers so the openssl-sys crate compiles.
+          OPENSSL_DIR = pkgs.lib.optionalString pkgs.stdenv.isLinux
+            "${pkgs.openssl.dev}";
+          OPENSSL_LIB_DIR = pkgs.lib.optionalString pkgs.stdenv.isLinux
+            "${pkgs.openssl.out}/lib";
 
           # Set a clear prompt so developers know they are in the Nix shell.
           shellHook = ''
@@ -61,19 +111,22 @@
             echo "  Runtime versions:"
             echo "    java    $(java -version 2>&1 | head -1)"
             echo "    bun     $(bun --version)"
+            echo "    rustc   $(rustc --version)"
+            echo "    cargo   $(cargo --version)"
             echo ""
             echo "  Available commands:"
-            echo "    bun run dev     — start shadow-cljs watch + dev server on :8080"
-            echo "    bun run release — production build  →  docs/cljs-out/"
-            echo "    bun run clean   — remove build artefacts"
-            echo "    bun run report  — generate build size report"
-            echo "    clj-kondo --lint src/  — lint"
-            echo "    cljfmt check src/      — check formatting"
-            echo "    cljfmt fix src/        — auto-fix formatting"
+            echo "    just dev          — start shadow-cljs watch + dev server on :8080"
+            echo "    just build        — production ClojureScript build → docs/cljs-out/"
+            echo "    just tauri-dev    — start Tauri desktop app with hot reload"
+            echo "    just tauri-build  — build Tauri desktop app + installers"
+            echo "    just tauri-info   — show Tauri environment info"
+            echo "    just lint         — clj-kondo lint"
+            echo "    just fmt          — auto-fix ClojureScript formatting"
+            echo "    just ci           — lint + fmt-check + release build"
             echo ""
 
             # Install JS dependencies via bun if node_modules is absent.
-            # This is a no-op if bun.lockb + node_modules are already up to date.
+            # This is a no-op if bun.lock + node_modules are already up to date.
             if [ ! -d node_modules ]; then
               echo "  → Running 'bun install' to hydrate node_modules…"
               bun install

@@ -4,7 +4,7 @@
 * Repo
   - https://github.com/ArikRahman/Clojkstra
 
-A ClojureScript + re-frame starter template designed for cloning.
+A ClojureScript + React (via Reagent + Re-frame) starter template designed for cloning.
 Build new SPAs by cloning this repo, renaming the namespace, and deleting the demo pages.
 
 #+BEGIN_CENTER

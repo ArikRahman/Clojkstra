@@ -17,7 +17,7 @@
    {:file "db.cljs"            :kind :framework :desc "App-db schema and seeded default state"}
    {:file "events.cljs"        :kind :framework :desc "All re-frame event handlers"}
    {:file "subs.cljs"          :kind :framework :desc "All re-frame subscriptions"}
-   {:file "routes.cljs"        :kind :framework :desc "bidi route table + pushy hash-routing"}
+
    {:file "effects.cljs"       :kind :framework :desc "Custom re-frame effect handlers"}
    {:file "utils.cljs"         :kind :framework :desc "Pure utility functions"}
    {:file "views.cljs"         :kind :framework :desc "App shell, layout, page dispatch"}
@@ -85,7 +85,7 @@
   [ui/card {:title (str "What is " app-name "?")}
    [:div {:class "flex flex-col gap-3 text-sm text-gray-400 leading-relaxed"}
     [:p
-     (str app-name " (v" version ") is a ClojureScript + re-frame starter template. "
+     (str app-name " (v" version ") is a ClojureScript + React (via Reagent + Re-frame) template. "
           "It is not a one-off application — it is a scaffold designed to be cloned, "
           "renamed, and built upon. The demo pages show how the framework is used; "
           "the framework files form a base you keep.")]

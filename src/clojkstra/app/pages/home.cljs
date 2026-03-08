@@ -15,7 +15,7 @@
    {:name "re-frame"      :desc "Predictable state via events and subscriptions"}
    {:name "Reagent"       :desc "Minimal React wrapper with ClojureScript idioms"}
    {:name "shadow-cljs"   :desc "Fast, deps.edn-native build tool"}
-   {:name "bidi + pushy"  :desc "Data-driven hash routing, works on GitHub Pages"}
+
    {:name "Bun"           :desc "Fast JS runtime — no npm, no node"}])
 
 (def ^:private principles
@@ -48,7 +48,7 @@
    [:h1 {:class "text-5xl font-bold text-gray-100 tracking-tight"}
     "Clojkstra"]
    [:p {:class "text-xl text-gray-400 max-w-xl leading-relaxed"}
-    "A ClojureScript + re-frame starter template designed for cloning.
+    "A ClojureScript + React (via Reagent + Re-frame) template designed for bootstrapping.
      Build new SPAs by forking, renaming, and deleting the demo pages."]
    [:div {:class "flex flex-wrap justify-center gap-3 mt-2"}
     [ui/badge {:label "ClojureScript" :variant :info}]

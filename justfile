@@ -1,6 +1,9 @@
 # Clojkstra — justfile
 # Install just: https://github.com/casey/just
 # Run from Clojkstra/ with: just <recipe>
+#
+# Tauri recipes require Rust/Cargo in PATH.
+# In the Nix devShell (nix develop) these are provided automatically.
 
 # ── Settings ──────────────────────────────────────────────────────────────────
 
@@ -80,6 +83,22 @@ check: lint fmt-check
 
 # Run all checks then a production build — use before committing
 ci: check build
+
+# ── Tauri ─────────────────────────────────────────────────────────────────────
+
+# Start the Tauri desktop app in development mode with hot reload.
+# shadow-cljs watch is launched automatically via beforeDevCommand in tauri.conf.json.
+tauri-dev:
+    cargo-tauri dev
+
+# Build the Tauri desktop app in release mode and generate installers.
+# The ClojureScript release build is run automatically via beforeBuildCommand.
+tauri-build:
+    cargo-tauri build
+
+# Show Tauri environment info (Rust, OS, relevant config)
+tauri-info:
+    cargo-tauri info
 
 # ── Deploy ────────────────────────────────────────────────────────────────────
 
