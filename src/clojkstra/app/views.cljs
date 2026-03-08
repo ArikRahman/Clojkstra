@@ -14,13 +14,14 @@
        3. Require it here and add a case in `page-for-route`
        4. Add a nav link entry in `nav-links`"
   (:require
-   [re-frame.core                    :as rf]
-   [clojkstra.app.subs               :as subs]
-   [clojkstra.app.events             :as events]
-   [clojkstra.app.components.ui      :as ui]
-   [clojkstra.app.pages.home         :as home]
-   [clojkstra.app.pages.about        :as about]
-   [clojkstra.app.pages.example      :as example]))
+   [re-frame.core               :as rf]
+   [clojkstra.app.subs          :as subs]
+   [clojkstra.app.events        :as events]
+   [clojkstra.app.routes        :as routes]
+   [clojkstra.app.components.ui :as ui]
+   [clojkstra.app.pages.home    :as home]
+   [clojkstra.app.pages.about   :as about]
+   [clojkstra.app.pages.example :as example]))
 
 ;; ---------------------------------------------------------------------------
 ;; Navigation link definitions
@@ -83,7 +84,7 @@
                    (if active
                      "bg-indigo-600 text-white"
                      "text-gray-400 hover:text-indigo-400 hover:bg-gray-800"))
-    :href     (str "#/" (name handler))
+    :href     (str "#" (routes/path-for handler))
     :on-click (fn [e]
                 (.preventDefault e)
                 (rf/dispatch [::events/set-route {:handler handler :route-params {}}]))}
@@ -116,6 +117,11 @@
      (str "© " (.getFullYear (js/Date.)) " " app-name " " version
           " — ClojureScript + re-frame starter template")]
     [:div {:class "flex items-center gap-4"}
+     [:a {:class  "text-xs text-gray-600 hover:text-indigo-400 transition-colors"
+          :href   "https://github.com/ArikRahman/Clojkstra"
+          :target "_blank"
+          :rel    "noopener noreferrer"}
+      "GitHub"]
      [:a {:class  "text-xs text-gray-600 hover:text-indigo-400 transition-colors"
           :href   "https://github.com/day8/re-frame"
           :target "_blank"

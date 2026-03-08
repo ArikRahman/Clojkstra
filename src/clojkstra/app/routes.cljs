@@ -1,112 +1,78 @@
 (ns clojkstra.app.routes
   "Client-side routing for Clojkstra.
-   [FRAMEWORK FILE] — defines the route table and wires pushy to re-frame.
+   [FRAMEWORK FILE] — hash-based routing with no external dependencies.
 
-   Uses:
-     bidi  — data-driven bidirectional route matching
-     pushy — HTML5 history / hash-fragment listener
+   How it works:
+     - A js/window hashchange listener fires on every URL change.
+     - The hash fragment is parsed into a route keyword and dispatched
+       to ::events/set-route so the rest of the app is notified.
+     - navigate! pushes a new hash and triggers the listener.
 
-   Hash-based routing is enabled so the app works on GitHub Pages without
-   a server-side rewrite rule.  pushy is configured with a custom identity
-   function that strips the leading '#' before matching.
+   Route table:
+     Add entries to `routes` to register new pages.
+     Each key is the hash path string, each value is the handler keyword.
 
    Extension point:
-     Add new routes to `app-routes` and a corresponding page component in
-     pages/.  The router dispatches ::events/set-route on every navigation
-     and views/app-root selects the right page via the ::subs/current-handler
-     subscription."
+     1. Add an entry to `routes` below.
+     2. Create pages/my_page.cljs with (defn page [] ...)
+     3. Require it in views.cljs and add a case in page-for-route.
+     4. Add a nav link in views.cljs nav-links."
   (:require
-   [bidi.bidi      :as bidi]
-   [pushy.core     :as pushy]
-   [re-frame.core  :as rf]
+   [re-frame.core        :as rf]
    [clojkstra.app.events :as events]))
 
 ;; ---------------------------------------------------------------------------
 ;; Route table
-;; [FRAMEWORK] The structure is pure data — easy to extend, test, or print.
-;;
-;; Format: [prefix [[path handler] ...]]
-;; Add new top-level pages here.  Nested routes can use bidi's full syntax.
+;; key   — hash path as it appears after #  (e.g. "/" or "/about")
+;; value — handler keyword dispatched to ::events/set-route
 ;; ---------------------------------------------------------------------------
 
-(def app-routes
-  ["/" {""        :home
-        "about"   :about
-        "example" :example
-        true      :not-found}])
+(def ^:private routes
+  {"/"        :home
+   "/about"   :about
+   "/example" :example})
 
 ;; ---------------------------------------------------------------------------
 ;; Helpers
 ;; ---------------------------------------------------------------------------
 
-(defn path-for
-  "Generate a URL path string for a given route handler and optional params.
-   Example: (path-for :about)  => \"/about\"
-            (path-for :home)   => \"/\""
-  ([handler]
-   (bidi/path-for app-routes handler))
-  ([handler params]
-   (apply bidi/path-for app-routes handler (mapcat identity params))))
+(defn- current-hash []
+  (let [h (.. js/window -location -hash)]
+    (if (clojure.string/starts-with? h "#")
+      (subs h 1)
+      h)))
 
-(defn- match-path
-  "Match a raw path string against the route table.
-   Returns a map of {:handler kw :route-params map} or nil on no match."
-  [path]
-  (bidi/match-route app-routes path))
+(defn- match [path]
+  (or (get routes path)
+      (get routes "/")
+      :not-found))
 
-;; ---------------------------------------------------------------------------
-;; Hash routing support for GitHub Pages
-;; ---------------------------------------------------------------------------
-
-(defn- hash-identity
-  "Transforms the browser's current token for pushy.
-   Strips a leading '#' so bidi can match clean path strings like '/about'
-   even though the real URL is '/#/about'."
-  [path]
-  ;; pushy exposes the full hash fragment including '#'; drop it.
-  (if (clojure.string/starts-with? path "#")
-    (subs path 1)
-    path))
-
-(defn- dispatch-route
-  "Called by pushy whenever the URL changes.
-   Dispatches ::events/set-route with the matched bidi route map,
-   falling back to :not-found if no route matches."
-  [matched]
-  (let [route (or matched {:handler :not-found :route-params {}})]
-    (rf/dispatch [::events/set-route route])))
-
-;; ---------------------------------------------------------------------------
-;; Router instance
-;; [FRAMEWORK] Defined at module load; started explicitly in core/init.
-;; ---------------------------------------------------------------------------
-
-(defonce ^:private router
-  (pushy/pushy dispatch-route
-               (fn [path]
-                 (match-path (hash-identity path)))))
+(defn- dispatch-current! []
+  (let [path (current-hash)
+        path (if (clojure.string/blank? path) "/" path)]
+    (rf/dispatch [::events/set-route {:handler      (match path)
+                                      :route-params {}}])))
 
 ;; ---------------------------------------------------------------------------
 ;; Public API
 ;; ---------------------------------------------------------------------------
 
-(defn start!
-  "Initialise the pushy listener.  Call once from core/init.
-   pushy will immediately dispatch the route for the current URL."
-  []
-  (pushy/start! router))
-
-(defn stop!
-  "Tear down the pushy listener.  Useful in tests or when hot-reloading
-   requires a clean slate — core/on-reload does NOT call this."
-  []
-  (pushy/stop! router))
+(defn path-for
+  "Returns the hash path string for a given route handler keyword.
+   Example: (path-for :about) => \"/about\""
+  [handler]
+  (or (key (first (filter #(= (val %) handler) routes))) "/"))
 
 (defn navigate!
-  "Programmatically navigate to a route handler.
-   Pushes a new history entry; pushy fires dispatch-route automatically.
+  "Pushes a new route by setting the window hash.
+   Triggers the hashchange listener automatically.
    Example: (navigate! :about)"
-  ([handler]
-   (pushy/set-token! router (str "#" (path-for handler))))
-  ([handler params]
-   (pushy/set-token! router (str "#" (path-for handler params)))))
+  [handler]
+  (set! (.. js/window -location -hash) (path-for handler)))
+
+(defn start!
+  "Attach the hashchange listener and dispatch the current route.
+   Call once from core/init."
+  []
+  (.addEventListener js/window "hashchange" dispatch-current!)
+  (dispatch-current!))

@@ -19,8 +19,7 @@
      divider       — horizontal rule
      code-block    — monospace pre/code display
      notification  — dismissible toast-style notification"
-  (:require
-   [clojkstra.app.routes :as routes]))
+)
 
 ;; ---------------------------------------------------------------------------
 ;; Internal helpers
@@ -193,48 +192,7 @@
          :aria-label "Dismiss"}
         "×"])]))
 
-;; ---------------------------------------------------------------------------
-;; navbar
-;;
-;; Props:
-;;   :app-name      (string)  — brand name rendered on the left
-;;   :current-route (keyword) — active route handler for highlight logic
-;;   :links         (vector)  — [{:handler :home :label "Home"} ...]
-;;   :class         (string)  — extra CSS classes on the <nav> element
-;; ---------------------------------------------------------------------------
 
-(defn nav-link
-  [{:keys [handler label active class]}]
-  [:a
-   {:class    (classes
-               "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150"
-               (if active
-                 "bg-indigo-600 text-white"
-                 "text-gray-400 hover:text-gray-100 hover:bg-gray-800")
-               class)
-    :href     (str "#" (routes/path-for handler))
-    :on-click (fn [e]
-                (.preventDefault e)
-                (routes/navigate! handler))}
-   label])
-
-(defn navbar
-  [{:keys [app-name current-route links class]}]
-  [:nav
-   {:class (classes "bg-gray-900 border-b border-gray-800 sticky top-0 z-50" class)}
-   [:div {:class "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"}
-    [:div {:class "flex items-center justify-between h-16"}
-     [:a
-      {:class    "text-xl font-bold text-indigo-400 tracking-tight"
-       :href     "#/"
-       :on-click (fn [e] (.preventDefault e) (routes/navigate! :home))}
-      app-name]
-     [:div {:class "flex items-center gap-1"}
-      (for [{:keys [handler label]} links]
-        ^{:key handler}
-        [nav-link {:handler handler
-                   :label   label
-                   :active  (= current-route handler)}])]]]])
 
 ;; ---------------------------------------------------------------------------
 ;; page-title

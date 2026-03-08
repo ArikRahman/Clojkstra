@@ -1,17 +1,13 @@
-;; shadow-cljs configuration
-;; [FRAMEWORK FILE] - core build config, not demo-specific
+{:source-paths ["src"]
 
-{:deps     true
- :dev-http {8080 "docs/"}
+ :dependencies [[reagent "1.2.0"]
+                [re-frame "1.4.3"]]
+
+ :dev-http {8080 "docs"}
 
  :builds
- {:app
-  {:target     :browser
-   :output-dir "docs/cljs-out"
-   :asset-path "/cljs-out"
-
-   :modules
-   {:main {:init-fn clojkstra.app.core/init}}
-
-   :devtools
-   {:after-load clojkstra.app.core/on-reload}}}}
+ {:app {:target     :browser
+        :output-dir "docs/cljs-out"
+        :asset-path "/cljs-out"
+        :modules    {:main {:init-fn clojkstra.app.core/init}}
+        :devtools   {:after-load clojkstra.app.core/on-reload}}}}

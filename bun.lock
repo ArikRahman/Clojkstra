@@ -5,7 +5,7 @@
     "": {
       "name": "clojkstra",
       "dependencies": {
-        "react": "18",
+        "react": "18.3.1",
         "react-dom": "18",
       },
       "devDependencies": {

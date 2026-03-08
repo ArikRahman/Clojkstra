@@ -18,12 +18,6 @@
         jdk = pkgs.jdk21;
 
         # ---------------------------------------------------------------------------
-        # Clojure CLI tools — used for deps.edn classpath resolution.
-        # shadow-cljs delegates Maven artifact fetching to the Clojure CLI.
-        # ---------------------------------------------------------------------------
-        clojure = pkgs.clojure.override { jdk = jdk; };
-
-        # ---------------------------------------------------------------------------
         # Bun — the JS runtime used for all package management and script running.
         # NEVER use npm or node directly; always use bun / bunx.
         # ---------------------------------------------------------------------------
@@ -45,9 +39,8 @@
 
           buildInputs = [
             # --- Language runtimes ---
-            jdk
-            clojure
-            bun
+              jdk
+              bun
 
             # --- Utilities ---
             pkgs.git
@@ -57,7 +50,7 @@
             pkgs.cljfmt        # ClojureScript formatter
           ];
 
-          # Ensure the JVM used by Clojure CLI and shadow-cljs is the pinned one.
+          # Ensure the JVM used by shadow-cljs is the pinned one.
           JAVA_HOME = jdk;
 
           # Set a clear prompt so developers know they are in the Nix shell.
@@ -67,15 +60,14 @@
             echo ""
             echo "  Runtime versions:"
             echo "    java    $(java -version 2>&1 | head -1)"
-            echo "    clojure $(clojure --version 2>&1)"
             echo "    bun     $(bun --version)"
             echo ""
             echo "  Available commands:"
-            echo "    bun run dev       — start shadow-cljs watch + dev server on :8080"
-            echo "    bun run release   — production build  →  docs/cljs-out/"
-            echo "    bun run clean     — remove build artefacts"
-            echo "    bun run report    — generate build size report"
-            echo "    clj-kondo --lint src/  — lint ClojureScript sources"
+            echo "    bun run dev     — start shadow-cljs watch + dev server on :8080"
+            echo "    bun run release — production build  →  docs/cljs-out/"
+            echo "    bun run clean   — remove build artefacts"
+            echo "    bun run report  — generate build size report"
+            echo "    clj-kondo --lint src/  — lint"
             echo "    cljfmt check src/      — check formatting"
             echo "    cljfmt fix src/        — auto-fix formatting"
             echo ""

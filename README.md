@@ -1,5 +1,7 @@
 # ⚡ Clojkstra
 
+> **Repo:** https://github.com/ArikRahman/Clojkstra
+
 A ClojureScript + re-frame starter template designed for cloning.  
 Build new SPAs by cloning this repo, renaming the namespace, and deleting the demo pages.
 
@@ -7,6 +9,7 @@ Build new SPAs by cloning this repo, renaming the namespace, and deleting the de
 [![re-frame](https://img.shields.io/badge/re-frame-1.4-purple)](https://github.com/day8/re-frame)
 [![shadow-cljs](https://img.shields.io/badge/shadow--cljs-2.28-orange)](https://shadow-cljs.org)
 [![Bun](https://img.shields.io/badge/bun-1.1-pink)](https://bun.sh)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-brightgreen)](https://arikrahman.github.io/Clojkstra)
 
 ---
 
@@ -268,8 +271,8 @@ The app is built directly into `docs/` so GitHub Pages can serve it from that di
 
 **One-time setup:**
 
-1. Push the repo to GitHub
-2. Go to **Settings → Pages**
+1. The repo is already at https://github.com/ArikRahman/Clojkstra
+2. Go to **Settings → Pages** on that repo
 3. Set **Source** to `Deploy from a branch`, branch `main`, folder `/docs`
 4. Click **Save**
 
@@ -295,7 +298,7 @@ This is the core workflow the template is designed for.
 ### Step 1 — Clone and rename
 
 ```sh
-git clone https://github.com/yourname/Clojkstra my-new-app
+git clone https://github.com/ArikRahman/Clojkstra my-new-app
 cd my-new-app
 ```
 

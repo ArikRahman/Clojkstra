@@ -57,13 +57,13 @@
      [:div {:class "flex flex-col gap-4"}
       [:div {:class "flex gap-3 items-end"}
        [:div {:class "flex-1"}
-        [:label {:class "block text-sm font-medium text-gray-700 mb-1"
+        [:label {:class "block text-sm font-medium text-gray-300 mb-1"
                  :for   "example-input"}
          "Type something"]
         [:input {:id          "example-input"
-                 :class       "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                 :class       "w-full rounded-lg border border-gray-700 bg-gray-800 text-gray-100 px-3 py-2 text-sm
                                 focus:outline-none focus:ring-2 focus:ring-indigo-500
-                                focus:border-transparent transition"
+                                focus:border-transparent transition placeholder-gray-600"
                  :type        "text"
                  :value       input-value
                  :placeholder "e.g. my new feature name"
@@ -100,13 +100,13 @@
               :subtitle "Read a boolean flag from :config :features in app-db."}
      [:div {:class "flex flex-col gap-3"}
       [:div {:class "flex items-center gap-3"}
-       [:span {:class "text-sm text-gray-700"} ":example-feature is currently"]
+       [:span {:class "text-sm text-gray-400"} ":example-feature is currently"]
        (if enabled?
          [ui/badge {:label "enabled" :variant :success}]
          [ui/badge {:label "disabled" :variant :danger}])]
       (when enabled?
-        [:div {:class "rounded-lg bg-indigo-50 border border-indigo-100 p-4"}
-         [:p {:class "text-sm text-indigo-700"}
+        [:div {:class "rounded-lg bg-indigo-950 border border-indigo-800 p-4"}
+         [:p {:class "text-sm text-indigo-300"}
           "✅ This content is only visible when the feature flag is on. "
           "Toggle it in db.cljs under :config :features :example-feature."]])
       [ui/button {:label    (if enabled? "Disable flag" "Enable flag")
@@ -198,8 +198,8 @@
                  :size     :sm
                  :on-click #(swap! local-state update :show-detail? not)}]
      (when open?
-       [:div {:class "rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600
-                      leading-relaxed animate-pulse-once"}
+       [:div {:class "rounded-lg border border-gray-700 bg-gray-800 p-4 text-sm text-gray-400
+                      leading-relaxed"}
         [:p "This panel is toggled by a Reagent ratom — no re-frame event needed."]
         [:p {:class "mt-2"}
          "Use local ratom state for transient UI concerns (open/closed, hover, tab index)."]
