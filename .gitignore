@@ -98,5 +98,6 @@ config.local.edn
 *.log
 *.tmp
 *.temp
+.clj-kondo
 npm-debug.log*
 bun-debug.log*
