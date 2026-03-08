@@ -1,0 +1,458 @@
+#+TITLE: ⚡ Clojkstra
+#+DESCRIPTION: A ClojureScript + re-frame starter template designed for cloning.
+
+* Repo
+  - https://github.com/ArikRahman/Clojkstra
+
+A ClojureScript + re-frame starter template designed for cloning.
+Build new SPAs by cloning this repo, renaming the namespace, and deleting the demo pages.
+
+#+BEGIN_CENTER
+[[https://img.shields.io/badge/ClojureScript-1.11-blue][ClojureScript]]
+[[https://img.shields.io/badge/re-frame-1.4-purple][re-frame]]
+[[https://img.shields.io/badge/shadow--cljs-2.28-orange][shadow-cljs]]
+[[https://img.shields.io/badge/bun-1.1-pink][Bun]]
+[[https://img.shields.io/badge/GitHub%20Pages-live-brightgreen][GitHub Pages]]
+#+END_CENTER
+
+-----
+
+* Table of Contents
+  - [[#overview][Overview]]
+  - [[#tech-stack][Tech Stack]]
+  - [[#project-structure][Project Structure]]
+  - [[#getting-started][Getting Started]]
+    - [[#prerequisites][Prerequisites]]
+    - [[#dev-commands][Dev Commands]]
+  - [[#architecture][Architecture]]
+    - [[#data-flow][Data Flow]]
+    - [[#file-map][File Map]]
+    - [[#framework-vs-demo-files][Framework vs. Demo Files]]
+  - [[#routing][Routing]]
+  - [[#feature-flags][Feature Flags]]
+  - [[#github-pages-deployment][GitHub Pages Deployment]]
+  - [[#how-to-turn-clojkstra-into-a-new-app][How to Turn Clojkstra into a New App]]
+  - [[#extension-points][Extension Points]]
+  - [[#linting-and-formatting][Linting and Formatting]]
+  - [[#nix-dev-shell][Nix Dev Shell]]
+
+-----
+
+* Overview
+
+Clojkstra is not a one-off app. It is a *reusable starter template, engine, and vehicle for future projects*. Every architectural decision is documented and every file is clearly labelled as either a /framework/ file (keep it) or a /demo/ file (safe to delete and replace).
+
+The included SPA demonstrates:
+
+- Hash-based client-side routing (works on GitHub Pages with no server config)
+- re-frame event dispatch and subscriptions wired end-to-end
+- A reusable Reagent UI component library
+- Global notification toasts, loading overlays, and error banners driven by app-db
+- Feature flags, config tokens, and a runtime-updatable theme surface
+- A =reg-event-fx= effect handler library (navigate, set-title, localStorage, log, setTimeout)
+- Local ratom state patterns alongside app-db patterns
+
+-----
+
+* Tech Stack
+
+| Package        | Role                        | Version |
+|----------------+-----------------------------+---------|
+| ClojureScript  | Language                    | 1.11    |
+| re-frame       | State management + event bus | 1.4     |
+| Reagent        | React wrapper               | 1.2     |
+| shadow-cljs    | Build tool                  | 2.28    |
+| Bun            | JS runtime + package manager| 1.1     |
+| Tailwind CSS   | Utility CSS (CDN in dev)    | 3.x     |
+
+All dependencies are FOSS-licensed. =npm= and =node= are never used — everything goes through =bun= / =bunx=.
+
+-----
+
+* Project Structure
+
+#+BEGIN_SRC text
+Clojkstra/
+├── src/
+│   └── clojkstra/
+│       └── app/
+│           ├── core.cljs            # Entry point — init, hot-reload, mount
+│           ├── db.cljs              # App-db schema and default state
+│           ├── events.cljs          # All re-frame event handlers
+│           ├── subs.cljs            # All re-frame subscriptions
+│           ├── views.cljs           # App shell, layout, page dispatch
+│           ├── routes.cljs          # hash router (no external deps)
+│           ├── effects.cljs         # Custom re-frame effect handlers
+│           ├── utils.cljs           # Pure utility functions
+│           ├── components/
+│           │   └── ui.cljs          # Reusable Reagent UI component library
+│           └── pages/
+│               ├── home.cljs        # Home page (demo)
+│               ├── about.cljs       # About page (demo)
+│               └── example.cljs     # Example page template (demo)
+├── docs/
+│   ├── index.html                   # GitHub Pages entry point
+│   ├── 404.html                     # SPA redirect for deep links
+│   └── cljs-out/                    # Compiled JS (git-ignored, generated)
+├── shadow-cljs.edn                  # shadow-cljs build config
+├── deps.edn                         # Clojure/ClojureScript dependency manifest
+├── package.json                     # Bun scripts + JS devDependencies
+├── flake.nix                        # Nix devShell
+├── .envrc                           # direnv: use flake
+├── .clj-kondo/config.edn            # Linter config
+└── .cljfmt.edn                      # Formatter config
+#+END_SRC
+
+-----
+
+* Getting Started
+
+**Prerequisites**
+
+- *Option A — Nix (recommended)*
+
+  #+BEGIN_SRC sh
+  nix develop     # or: direnv allow  (if you have direnv installed)
+  #+END_SRC
+
+  This drops you into a shell with Java, Clojure CLI, Bun, clj-kondo, and cljfmt pre-installed. No global installs needed.
+
+- *Option B — manual*
+
+  Install the following globally:
+
+  - [[https://adoptium.net][JDK 21+]]
+  - [[https://clojure.org/guides/install_clojure][Clojure CLI tools]]
+  - [[https://bun.sh][Bun]] (=curl -fsSL https://bun.sh/install | bash=)
+
+  Then install JS dependencies:
+
+  #+BEGIN_SRC sh
+  bun install
+  #+END_SRC
+
+**Dev Commands**
+
+| Command              | What it does                                                        |
+|----------------------+---------------------------------------------------------------------|
+| =bun run dev=        | Start shadow-cljs watch + dev HTTP server on http://localhost:8080  |
+| =bun run release=    | Production build → =docs/cljs-out/= (dead-code eliminated, minified)|
+| =bun run clean=      | Remove =docs/cljs-out/= and =.shadow-cljs/= cache                   |
+| =bun run report=     | Generate a build size report → =report.html=                        |
+| =clj-kondo --lint src/= | Lint all ClojureScript sources                                   |
+| =cljfmt check src/=  | Check formatting without modifying files                            |
+| =cljfmt fix src/=    | Auto-fix formatting in place                                        |
+| =nix fmt=            | Format =flake.nix= with nixpkgs-fmt                                 |
+
+The dev server serves from =docs/= and hot-reloads on every save via shadow-cljs.
+
+-----
+
+* Architecture
+
+**Data Flow**
+
+#+BEGIN_SRC text
+User interaction
+     │
+     ▼
+(rf/dispatch [::events/some-event payload])
+     │
+     ▼
+reg-event-db / reg-event-fx   ← reads :db, returns new :db + optional :effects
+     │
+     ▼
+app-db  (single immutable map — the only source of truth)
+     │
+     ▼
+reg-sub  (layer 2: extract raw slice → layer 3: derive/transform)
+     │
+     ▼
+@(rf/subscribe [::subs/some-value])
+     │
+     ▼
+Reagent component re-renders  →  DOM update
+#+END_SRC
+
+Effects (HTTP, routing, localStorage, etc.) are handled by registered =reg-fx= handlers in =effects.cljs= — they are never called directly from view components.
+
+**File Map**
+
+| File                  | Kind      | Purpose                                    |
+|-----------------------+-----------+--------------------------------------------|
+| core.cljs             | framework | Entry point — init, hot-reload, mount      |
+| db.cljs               | framework | App-db schema and default state            |
+| events.cljs           | framework | All re-frame event handlers                |
+| subs.cljs             | framework | All re-frame subscriptions                 |
+| routes.cljs           | framework | hash router (no external deps)             |
+| effects.cljs          | framework | Custom re-frame effect handlers            |
+| utils.cljs            | framework | Pure utility functions                     |
+| views.cljs            | framework | App shell, layout, and page dispatch       |
+| components/ui.cljs    | framework | Reusable Reagent UI component library      |
+| pages/home.cljs       | demo      | Home page — counter + notification demo    |
+| pages/about.cljs      | demo      | About page — stack info, file map, data flow|
+| pages/example.cljs    | demo      | Example page template for new features     |
+
+**Framework vs. Demo Files**
+
+- /Framework files/ form the reusable base architecture. They contain extension points and should be kept (and modified) when building a new app.
+- /Demo files/ are example content that demonstrate how the framework is used. They are safe to delete entirely — removing them will not break the base architecture.
+
+-----
+
+* Routing
+
+Clojkstra uses *hash-based routing* (=/#/about=, =/#/example=) so the app works on GitHub Pages without any server-side URL rewriting.
+
+Routes are defined as a pure data structure in =routes.cljs=:
+
+#+BEGIN_SRC clojure
+(def app-routes
+  ["/" {""        :home
+        "about"   :about
+        "example" :example
+        true      :not-found}])
+#+END_SRC
+
+To add a new route:
+
+1. Add an entry to =app-routes= in =routes.cljs=
+2. Create =src/clojkstra/app/pages/my_page.cljs= with a =(defn page [] ...)= component
+3. Require it in =views.cljs= and add a =case= branch in =page-for-route=
+4. Add a ={ :handler :my-page :label "My Page" }= entry to =nav-links= in =views.cljs=
+
+Navigate programmatically from anywhere:
+
+#+BEGIN_SRC clojure
+(routes/navigate! :about)
+;; or from an event handler via the :navigate effect:
+{:navigate {:handler :about}}
+#+END_SRC
+
+-----
+
+* Feature Flags
+
+Feature flags live in =db.cljs= under =:config :features=:
+
+#+BEGIN_SRC clojure
+:features
+{:example-feature true
+ :debug-panel     true}
+#+END_SRC
+
+Check a flag in a view via subscription:
+
+#+BEGIN_SRC clojure
+@(rf/subscribe [::subs/feature-enabled? :my-flag])
+#+END_SRC
+
+Toggle a flag at runtime from an event:
+
+#+BEGIN_SRC clojure
+(rf/dispatch [::events/toggle-feature :my-flag])
+#+END_SRC
+
+Set a flag programmatically:
+
+#+BEGIN_SRC clojure
+(rf/dispatch [::events/set-config [:features :my-flag] false])
+#+END_SRC
+
+-----
+
+* GitHub Pages Deployment
+
+The app is built directly into =docs/= so GitHub Pages can serve it from that directory.
+
+**One-time setup:**
+
+1. The repo is already at https://github.com/ArikRahman/Clojkstra
+2. Go to *Settings → Pages* on that repo
+3. Set *Source* to =Deploy from a branch=, branch =main=, folder =/docs=
+4. Click *Save*
+
+**Deploy a new release:**
+
+#+BEGIN_SRC sh
+bun run release
+git add docs/
+git commit -m "release: <version>"
+git push
+#+END_SRC
+
+GitHub Pages will serve the updated build within a minute.
+
+The =docs/404.html= handles the rare case where someone hits a non-root URL directly — it redirects them to =index.html= so the SPA router can take over.
+
+-----
+
+* How to Turn Clojkstra into a New App
+
+This is the core workflow the template is designed for.
+
+**Step 1 — Clone and rename**
+
+#+BEGIN_SRC sh
+git clone https://github.com/ArikRahman/Clojkstra my-new-app
+cd my-new-app
+#+END_SRC
+
+**Step 2 — Replace the namespace root**
+
+Rename =src/clojkstra/= to =src/my_app/= (underscores in paths, hyphens in ns names):
+
+#+BEGIN_SRC sh
+mv src/clojkstra src/my_app
+#+END_SRC
+
+Do a project-wide find-and-replace:
+
+- =clojkstra.app=  →  =my-app.app=
+- =clojkstra/app=  →  =my_app/app=
+
+Most editors support this with a single multi-file search-and-replace.
+
+**Step 3 — Update config**
+
+In =db.cljs=, set your app's name and version:
+
+#+BEGIN_SRC clojure
+:config
+{:app-name "My New App"
+ :version  "0.1.0"
+ ...}
+#+END_SRC
+
+In =shadow-cljs.edn=, update =:init-fn=:
+
+#+BEGIN_SRC clojure
+:init-fn my-app.app.core/init
+:after-load my-app.app.core/on-reload
+#+END_SRC
+
+In =package.json=, update the ="name"= field.
+
+**Step 4 — Delete demo files**
+
+Remove the three demo pages:
+
+#+BEGIN_SRC sh
+rm src/my_app/app/pages/home.cljs
+rm src/my_app/app/pages/about.cljs
+rm src/my_app/app/pages/example.cljs
+#+END_SRC
+
+In =views.cljs=, remove the requires for those pages and add your own.
+In =events.cljs= and =subs.cljs=, delete all sections marked [DEMO].
+In =db.cljs=, remove the =:counter= and =:notifications= keys.
+
+**Step 5 — Seed your domain state**
+
+Add your app's initial data structure to =db.cljs=:
+
+#+BEGIN_SRC clojure
+(def default-db
+  {:current-route {:handler :home :route-params {}}
+   :loading?       false
+   :error          nil
+   :config         { ... }
+   ;; Your domain state:
+   :current-user   nil
+   :my-feature     {:items [] :loading? false}})
+#+END_SRC
+
+**Step 6 — Add your first real page**
+
+Copy =pages/example.cljs= as a starting scaffold:
+
+#+BEGIN_SRC sh
+cp src/my_app/app/pages/example.cljs src/my_app/app/pages/my_feature.cljs
+#+END_SRC
+
+Update the namespace, follow the checklist at the top of the file, and add the route.
+
+**Step 7 — Wire API clients and auth (optional)**
+
+Add custom effect handlers in =effects.cljs= for HTTP, WebSocket, or analytics.
+Add =:auth= and =:api= keys to =db.cljs=.
+Gate in-progress work behind feature flags.
+
+-----
+
+* Extension Points
+
+Each file has a clearly marked =Extension point= comment block.
+Here is a quick reference:
+
+| Where                  | What to add                                         |
+|------------------------+-----------------------------------------------------|
+| db.cljs                | New top-level keys for domain state; feature flags; theme tokens |
+| events.cljs            | Domain event handlers; =reg-event-fx= for side-effectful events |
+| subs.cljs              | Domain subscriptions; derived/computed layer-3 subs |
+| routes.cljs            | New route entries in =app-routes=                   |
+| effects.cljs           | HTTP, WebSocket, analytics, native API effect handlers |
+| utils.cljs             | Pure helper functions with no re-frame dependencies |
+| components/ui.cljs     | New reusable Reagent components; or split into sub-namespaces |
+| views.cljs             | New page requires + =case= in =page-for-route=; new nav links |
+| pages/                 | One file per top-level page/feature                 |
+
+-----
+
+* Linting and Formatting
+
+**Lint:**
+
+#+BEGIN_SRC sh
+clj-kondo --lint src/
+#+END_SRC
+
+Configuration is in =.clj-kondo/config.edn=. re-frame registration macros are taught to clj-kondo so it understands =reg-event-db= / =reg-sub= / =reg-fx= without false positives.
+
+**Format (check only):**
+
+#+BEGIN_SRC sh
+cljfmt check src/
+#+END_SRC
+
+**Format (auto-fix):**
+
+#+BEGIN_SRC sh
+cljfmt fix src/
+#+END_SRC
+
+Configuration is in =.cljfmt.edn=. Namespace =:require= blocks are intentionally not auto-sorted — manual grouping with framework/local comments is preferred.
+
+-----
+
+* Nix Dev Shell
+
+=flake.nix= provides a fully reproducible development environment:
+
+#+BEGIN_SRC sh
+nix develop
+#+END_SRC
+
+Or with [[https://direnv.net][direnv]]:
+
+#+BEGIN_SRC sh
+echo "use flake" > .envrc
+direnv allow
+#+END_SRC
+
+The shell includes: =jdk21=, =clojure=, =bun=, =git=, =curl=, =jq=, =clj-kondo=, =cljfmt=.
+
+On entry, =bun install= runs automatically if =node_modules/= is missing.
+
+Format =flake.nix= itself with:
+
+#+BEGIN_SRC sh
+nix fmt
+#+END_SRC
+
+-----
+
+* License
+
+MIT — do whatever you want with it.
+The whole point is that you clone it and make it yours.
