@@ -85,6 +85,7 @@ ci: check build
 deploy msg="deploy": build
     jj commit -m "{{msg}}"
     jj bookmark set main --revision @-
+    jj bookmark track main --remote=origin 2>/dev/null || true
     jj git push --bookmark main
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
@@ -156,6 +157,7 @@ fetch:
 snap message:
     jj commit -m "{{message}}"
     jj bookmark set main --revision @-
+    jj bookmark track main --remote=origin 2>/dev/null || true
     jj git push --bookmark main
 
 # One-step: run ci checks, commit, advance bookmark, push.
@@ -163,6 +165,7 @@ snap message:
 ship message: ci
     jj commit -m "{{message}}"
     jj bookmark set main --revision @-
+    jj bookmark track main --remote=origin 2>/dev/null || true
     jj git push --bookmark main
 
 # Abandon the current (empty) working copy change and move @ to parent
