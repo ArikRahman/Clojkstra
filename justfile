@@ -85,17 +85,20 @@ ci: check build
 
 # Build, commit all changes (including docs/), and push to GitHub Pages.
 # GitHub Pages serves docs/ from the main branch.
+# Fetches + rebases onto remote main first so the bookmark never goes sideways.
 # Skips the commit step if the working copy has no changes.
 # Usage: just deploy           (uses default message "deploy")
 #        just deploy "message"
 deploy msg="deploy": build
     @if jj diff --summary | grep -q .; then \
         jj commit -m "{{msg}}"; \
-        jj bookmark set main --revision @-; \
     else \
-        echo "Nothing changed — skipping commit, just pushing."; \
+        echo "Nothing changed — skipping commit, proceeding to push."; \
     fi
-    jj bookmark track main --remote=origin 2>/dev/null || true
+    jj git fetch
+    jj rebase -d main@origin
+    jj bookmark set main --revision @-
+    jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
@@ -166,16 +169,20 @@ fetch:
 # Usage: just snap "what I changed"
 snap message:
     jj commit -m "{{message}}"
+    jj git fetch
+    jj rebase -d main@origin
     jj bookmark set main --revision @-
-    jj bookmark track main --remote=origin 2>/dev/null || true
+    jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
 
 # One-step: run ci checks, commit, advance bookmark, push.
 # Usage: just ship "what I changed"
 ship message: ci
     jj commit -m "{{message}}"
+    jj git fetch
+    jj rebase -d main@origin
     jj bookmark set main --revision @-
-    jj bookmark track main --remote=origin 2>/dev/null || true
+    jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
 
 # Abandon the current (empty) working copy change and move @ to parent
