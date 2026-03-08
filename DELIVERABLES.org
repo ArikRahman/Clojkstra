@@ -1,0 +1,102 @@
+#+TITLE: Clojkstra — Deliverables Log
+#+DATE: 2026-03-07
+
+* Session: Execute Project Charter & Harden Scaffold
+
+** Scaffold & Architecture
+   - Created full ClojureScript + re-frame project from charter
+   - Namespace layout rooted at =clojkstra.app=:
+     - =core.cljs= — entry point, init, hot-reload, mount
+     - =db.cljs= — app-db schema and default state
+     - =events.cljs= — all re-frame event handlers
+     - =subs.cljs= — all re-frame subscriptions
+     - =routes.cljs= — hash-change router (no external deps)
+     - =effects.cljs= — custom re-frame effect handlers
+     - =utils.cljs= — pure utility functions
+     - =views.cljs= — app shell, layout, page dispatch
+     - =components/ui.cljs= — reusable Reagent UI component library
+     - =pages/home.cljs= — counter + notification demo
+     - =pages/about.cljs= — stack info, file map
+     - =pages/example.cljs= — example page template
+
+** Build & Tooling
+   - =shadow-cljs.edn= — build config, output to =docs/cljs-out/=
+   - =package.json= — bun scripts: dev, release, clean, report
+   - =deps.edn= — removed; deps consolidated into =shadow-cljs.edn=
+   - =justfile= — full suite of developer recipes (see below)
+   - =flake.nix= — Nix devShell for reproducible environment
+   - =.clj-kondo/config.edn= — linter config
+   - =.cljfmt.edn= — formatter config
+
+** GitHub Pages Deployment
+   - Output dir set to =docs/= for GitHub Pages serving from =main=
+   - =docs/index.html= — SPA entry point with dark mode, FOUC spinner
+   - =docs/404.html= — SPA redirect safety net
+   - =docs/CNAME= — custom domain support
+   - Fixed asset path: changed =:asset-path "/cljs-out"= → ="cljs-out"=
+     (relative) so the JS bundle loads correctly on GitHub Pages
+     subdirectory hosting (was causing infinite spinner on Pages,
+     worked fine locally)
+
+** Routing
+   - Replaced =bidi= + =pushy= (external libraries) with a small
+     internal hash-change router in =routes.cljs=
+   - Eliminates transitive dependency weight; no external routing deps
+
+** Dependency Audit & Slimming
+   - Removed =re-frisk= dev preloads (large transitive chain)
+   - Removed =bidi= and =pushy= from =deps.edn= / =shadow-cljs.edn=
+   - Final runtime dep set: =reagent 1.2.0= + =re-frame 1.4.3=
+   - JS deps: =react 18.3.1=, =react-dom 18=, =shadow-cljs= (devDep)
+
+** Dark Mode
+   - =<html class="dark" style="color-scheme: dark">=
+   - =<meta name="color-scheme" content="dark">=
+   - Body and components use dark palette (Tailwind =bg-gray-950=, etc.)
+   - Tailwind =darkMode: "class"= config
+
+** justfile Recipes
+   All developer commands are wrapped in =just= recipes:
+   | Recipe              | Purpose                                      |
+   |---------------------+----------------------------------------------|
+   | =dev=               | Kill stale watcher, start shadow-cljs watch  |
+   | =stop= / =kill=     | Kill shadow-cljs JVM process                 |
+   | =build=             | Production release build                     |
+   | =clean= / =rebuild= | Remove output + cache; clean rebuild         |
+   | =lint=              | =clj-kondo --lint src/=                      |
+   | =fmt-check= / =fmt= | Check / auto-fix formatting                  |
+   | =check=             | lint + fmt-check                             |
+   | =ci=                | check + build                                |
+   | =deploy=            | build + fetch + rebase + commit + push       |
+   | =snap=              | fetch + rebase + commit + push               |
+   | =ship=              | ci + fetch + rebase + commit + push          |
+   | =commit=            | Finalise change, advance bookmark            |
+   | =push= / =fetch=    | Push / fetch main bookmark                   |
+   | =st= / =log= / =diff= / =fdiff= | jj status / log / diff helpers |
+   | =describe=          | Set working copy description                 |
+   | =abandon=           | Abandon empty working copy change            |
+   | =loc= / =files=     | Count LOC / list source files                |
+   | =bundle-size=       | Show production bundle size                  |
+   | =status=            | Summary: files, bundle, cache                |
+   | =report=            | Build size report → =report.html=            |
+   | =open=              | Open localhost:8080 in browser               |
+
+** Version Control (jujutsu) Hardening
+   - All push recipes (=deploy=, =snap=, =ship=) now run
+     =jj git fetch= + =jj rebase -d main@origin= before setting the
+     bookmark — prevents "Refusing to move bookmark backwards or
+     sideways" when remote has moved ahead (e.g. GitHub-side commits)
+   - =dev= recipe auto-kills any stale shadow-cljs process before
+     starting, preventing "ExceptionInfo: already started" errors
+   - =deploy= skips =jj commit= when working copy has no changes
+
+** Documentation
+   - =README.md= — setup, dev, deploy, "how to turn this into a new app"
+   - =AGENTS.md= — full agent orientation: layout, conventions, rules,
+     recipes, re-frame rules, namespace aliases, extension guides
+   - =CHARTER.org= — original project charter
+   - =DELIVERABLES.org= — this file
+
+** Dependency Version
+   - Bumped =shadow-cljs= from =2.28.18= → =2.28.23= in =package.json=
+     and =bun.lock=
