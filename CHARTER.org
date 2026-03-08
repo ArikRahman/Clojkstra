@@ -1,0 +1,69 @@
+#+TITLE: Clojkstra Project Charter
+
+* Project Initialization
+  - Initialize a new project called =Clojkstra= using ClojureScript + re-frame.
+
+* Primary Purpose
+  - Clojkstra is not a one-off app.
+  - It is a reusable starter template, engine, and vehicle for future projects.
+  - Design it so new apps can be cloned from it and customized quickly.
+
+* Core Requirements
+  - Use re-frame with shadow-cljs.
+  - Use a clean namespace layout rooted at =clojkstra.app=
+  - Human-facing product name: =Clojkstra=
+  - Output directory: =clojkstra=
+  - Include routing and debugging support.
+  - Keep dependencies minimal and FOSS-friendly.
+
+* Architecture
+  - Follow idiomatic re-frame separation between app-db, event handlers, subscriptions, and view components.
+  - Organize source so the core flow is obvious and easy to extend:
+    - uses bun
+    - core
+    - db
+    - events
+    - subs
+    - views
+    - routes
+    - components
+    - pages
+    - effects
+    - utils
+  - Make registrations explicit from the startup path so the project is easy to reason about.
+
+* Starter Features
+  - Build a small working SPA with:
+    - home page
+    - about page
+    - example page template for future features
+    - global app shell/layout
+    - navigation
+    - example event dispatch
+    - example subscriptions
+    - seeded app-db
+    - one reusable UI component
+    - uses bun, NEVER npm or node
+    - works with github pages, 
+      - exports to docs/
+      - uses hashed based routing
+  - Include clear spots where future projects can add API clients, domain modules, feature flags, auth, and persistence.
+
+* Template-Oriented Goals
+  - Favor conventions over magic.
+  - Keep files small and composable.
+  - Make it easy to delete demo features without breaking the base architecture.
+  - Include a configuration surface for app name, theme tokens, routes, and feature toggles.
+  - Separate framework code from demo/example code wherever practical.
+  - Add a “bootstrap a new app from this” section in the README.
+
+* Tooling
+  - Add a =flake.nix= and =devShell= for a Nix-first workflow.
+  - Add README commands for dev, release, clean, test, and lint.
+  - Include formatting/linting setup if lightweight.
+  - Keep the initial developer experience fast and simple.
+
+* Documentation
+  - Add concise comments only where they help contributors understand extension points.
+  - Document which files are framework/starter files versus demo/example files.
+  - Include a short section called “How to turn Clojkstra into a new app”.

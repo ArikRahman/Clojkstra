@@ -1,0 +1,67 @@
+;; cljfmt configuration for Clojkstra
+;; [FRAMEWORK FILE] — formatting rules for ClojureScript source.
+;;
+;; Run with:  cljfmt check src/
+;;            cljfmt fix src/
+;;
+;; Reference: https://github.com/weavejester/cljfmt
+
+{;; ---------------------------------------------------------------------------
+ ;; Whitespace
+ ;; ---------------------------------------------------------------------------
+
+ ;; Remove trailing whitespace on every line.
+ :remove-trailing-whitespace? true
+
+ ;; Ensure every file ends with a single newline.
+ :insert-missing-whitespace? true
+
+ ;; ---------------------------------------------------------------------------
+ ;; Indentation
+ ;; ---------------------------------------------------------------------------
+
+ ;; Use the default Clojure indentation rules.
+ ;; Individual overrides go in :indents below.
+ :indents
+ {;; re-frame registration macros — indent body forms like defn.
+  re-frame.core/reg-event-db [[:inner 2]]
+  re-frame.core/reg-event-fx [[:inner 2]]
+  re-frame.core/reg-sub      [[:inner 2]]
+  re-frame.core/reg-fx       [[:inner 1]]
+  re-frame.core/reg-cofx     [[:inner 1]]
+
+  ;; Reagent / hiccup helpers — treat like let/fn forms.
+  reagent.core/with-let      [[:block 1]]
+
+  ;; Common core macros that cljfmt sometimes mis-indents.
+  clojure.core/cond          [[:block 0]]
+  clojure.core/case          [[:block 1]]
+  clojure.core/condp         [[:block 2]]}
+
+ ;; ---------------------------------------------------------------------------
+ ;; Blank lines
+ ;; ---------------------------------------------------------------------------
+
+ ;; Normalise consecutive blank lines — no more than one blank line between
+ ;; top-level forms.
+ :remove-consecutive-blank-lines? true
+
+ ;; ---------------------------------------------------------------------------
+ ;; Namespace sorting
+ ;; ---------------------------------------------------------------------------
+
+ ;; Do NOT auto-sort :require / :import — we prefer manual grouping with
+ ;; comments (framework vs. third-party vs. local) over alphabetic order.
+ :sort-ns-references? false
+
+ ;; ---------------------------------------------------------------------------
+ ;; Paths to format / ignore
+ ;; ---------------------------------------------------------------------------
+
+ ;; Only format ClojureScript source; skip compiled output and cache dirs.
+ :paths ["src"]
+
+ :file-pattern #"\.clj[sc]?$"
+
+ ;; Exclude generated or vendored files if any are added in future.
+ :exclude-files []}

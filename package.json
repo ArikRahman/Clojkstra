@@ -1,0 +1,17 @@
+{
+  "name": "clojkstra",
+  "version": "0.1.0",
+  "description": "Clojkstra – ClojureScript + re-frame starter template",
+  "private": true,
+  "scripts": {
+    "dev":     "bunx shadow-cljs watch app",
+    "release": "bunx shadow-cljs release app",
+    "clean":   "rm -rf docs/cljs-out .shadow-cljs",
+    "report":  "bunx shadow-cljs run shadow.cljs.build-report app report.html"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "shadow-cljs": "2.28.18"
+  },
+  "packageManager": "bun@1.1.0"
+}
