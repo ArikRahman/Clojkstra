@@ -90,13 +90,13 @@ ci: check build
 # Usage: just deploy           (uses default message "deploy")
 #        just deploy "message"
 deploy msg="deploy": build
+    jj git fetch
+    jj rebase -d main@origin
     @if jj diff --summary | grep -q .; then \
         jj commit -m "{{msg}}"; \
     else \
         echo "Nothing changed — skipping commit, proceeding to push."; \
     fi
-    jj git fetch
-    jj rebase -d main@origin
     jj bookmark set main --revision @-
     jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
@@ -168,9 +168,9 @@ fetch:
 # One-step: commit, advance bookmark, and push to origin.
 # Usage: just snap "what I changed"
 snap message:
-    jj commit -m "{{message}}"
     jj git fetch
     jj rebase -d main@origin
+    jj commit -m "{{message}}"
     jj bookmark set main --revision @-
     jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
@@ -178,9 +178,9 @@ snap message:
 # One-step: run ci checks, commit, advance bookmark, push.
 # Usage: just ship "what I changed"
 ship message: ci
-    jj commit -m "{{message}}"
     jj git fetch
     jj rebase -d main@origin
+    jj commit -m "{{message}}"
     jj bookmark set main --revision @-
     jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
