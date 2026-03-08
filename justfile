@@ -19,7 +19,9 @@ install:
 # ── Development ────────────────────────────────────────────────────────────────
 
 # Start the shadow-cljs dev server with hot reload (http://localhost:8080)
+# Kills any stale watcher first so you never hit "already started".
 dev:
+    @pkill -f "shadow.cljs.devtools.cli" 2>/dev/null && echo "Stopped stale shadow-cljs process." || true
     bun run dev
 
 # Open the local dev site in the default browser
@@ -31,6 +33,9 @@ open:
 kill:
     @echo "Killing shadow-cljs server processes …"
     pkill -f "shadow.cljs.devtools.cli" && echo "Done." || echo "No shadow-cljs process found."
+
+# Alias for kill — cleanly stop the shadow-cljs watcher/server
+stop: kill
 
 # ── Build ──────────────────────────────────────────────────────────────────────
 
@@ -80,11 +85,16 @@ ci: check build
 
 # Build, commit all changes (including docs/), and push to GitHub Pages.
 # GitHub Pages serves docs/ from the main branch.
+# Skips the commit step if the working copy has no changes.
 # Usage: just deploy           (uses default message "deploy")
 #        just deploy "message"
 deploy msg="deploy": build
-    jj commit -m "{{msg}}"
-    jj bookmark set main --revision @-
+    @if jj diff --summary | grep -q .; then \
+        jj commit -m "{{msg}}"; \
+        jj bookmark set main --revision @-; \
+    else \
+        echo "Nothing changed — skipping commit, just pushing."; \
+    fi
     jj bookmark track main --remote=origin 2>/dev/null || true
     jj git push --bookmark main
 

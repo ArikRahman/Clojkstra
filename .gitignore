@@ -18,7 +18,7 @@ report.html
 # Compiled output — keep docs/ tracked (GitHub Pages source)
 # but ignore the generated JS bundle inside it
 # ---------------------------------------------------------------------------
-docs/cljs-out/
+docs/cljs-out/cljs-runtime
 
 # ---------------------------------------------------------------------------
 # Bun / Node package manager
