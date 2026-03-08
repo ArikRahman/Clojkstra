@@ -14,7 +14,7 @@
     "react-dom": "18"
   },
   "devDependencies": {
-    "shadow-cljs": "2.28.18"
+    "shadow-cljs": "2.28.23"
   },
   "packageManager": "bun@1.1.0"
 }
