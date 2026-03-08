@@ -4,12 +4,15 @@
   "description": "Clojkstra – ClojureScript + re-frame starter template",
   "private": true,
   "scripts": {
-    "dev":     "bunx shadow-cljs watch app",
+    "dev": "bunx shadow-cljs watch app",
     "release": "bunx shadow-cljs release app",
-    "clean":   "rm -rf docs/cljs-out .shadow-cljs",
-    "report":  "bunx shadow-cljs run shadow.cljs.build-report app report.html"
+    "clean": "rm -rf docs/cljs-out .shadow-cljs",
+    "report": "bunx shadow-cljs run shadow.cljs.build-report app report.html"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react": "18",
+    "react-dom": "18"
+  },
   "devDependencies": {
     "shadow-cljs": "2.28.18"
   },

@@ -14,5 +14,4 @@
    {:main {:init-fn clojkstra.app.core/init}}
 
    :devtools
-   {:after-load  clojkstra.app.core/on-reload
-    :preloads    [re-frisk.preload]}}}}
+   {:after-load clojkstra.app.core/on-reload}}}}

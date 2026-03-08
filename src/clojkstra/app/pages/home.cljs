@@ -1,153 +1,125 @@
 (ns clojkstra.app.pages.home
   "Home page for Clojkstra.
-   [DEMO FILE] — demonstrates re-frame event dispatch and subscriptions.
-   Safe to gut and replace with your own landing page content.
-
-   Shows:
-     - ::subs/counter + ::events/increment|decrement|reset-counter
-     - ::events/add-notification dispatch
-     - links to other pages"
+   [DEMO FILE] — project explainer / landing page.
+   Replace this content with your own when cloning."
   (:require
-   [re-frame.core               :as rf]
-   [clojkstra.app.subs          :as subs]
-   [clojkstra.app.events        :as events]
-   [clojkstra.app.routes        :as routes]
-   [clojkstra.app.components.ui :as ui]))
+   [clojkstra.app.components.ui :as ui]
+   [clojkstra.app.routes        :as routes]))
 
 ;; ---------------------------------------------------------------------------
-;; [DEMO] Counter widget
-;; Demonstrates the simplest possible event-dispatch + subscription loop.
+;; Data
 ;; ---------------------------------------------------------------------------
 
-(defn- counter-demo []
-  (let [label @(rf/subscribe [::subs/counter-label])
-        count @(rf/subscribe [::subs/counter])]
-    [ui/card {:title    "Event Dispatch Demo"
-              :subtitle "Increment, decrement, and reset a counter stored in app-db."}
-     [:div {:class "flex flex-col items-center gap-6 py-2"}
-      [:span {:class "text-5xl font-bold text-indigo-600 tabular-nums"
-              :aria-live "polite"
-              :aria-label label}
-       count]
-      [:div {:class "flex items-center gap-3"}
-       [ui/button {:label    "−"
-                   :variant  :secondary
-                   :size     :lg
-                   :on-click #(rf/dispatch [::events/decrement-counter])}]
-       [ui/button {:label    "+"
-                   :variant  :primary
-                   :size     :lg
-                   :on-click #(rf/dispatch [::events/increment-counter])}]]
-      [ui/button {:label    "Reset"
-                  :variant  :ghost
-                  :size     :sm
-                  :on-click #(rf/dispatch [::events/reset-counter])}]]]))
+(def ^:private stack
+  [{:name "ClojureScript" :desc "Compiled, functional, lisp on the browser"}
+   {:name "re-frame"      :desc "Predictable state via events and subscriptions"}
+   {:name "Reagent"       :desc "Minimal React wrapper with ClojureScript idioms"}
+   {:name "shadow-cljs"   :desc "Fast, deps.edn-native build tool"}
+   {:name "bidi + pushy"  :desc "Data-driven hash routing, works on GitHub Pages"}
+   {:name "Bun"           :desc "Fast JS runtime — no npm, no node"}])
+
+(def ^:private principles
+  [{:icon "🗂️"
+    :title "One source of truth"
+    :body "All state lives in a single immutable app-db map. Nothing is hidden in component-local state that other parts of the app need to know about."}
+   {:icon "⚡"
+    :title "Events, not mutations"
+    :body "The only way to change state is to dispatch a named event. Every transition is explicit, logged, and replayable in the re-frisk dev inspector."}
+   {:icon "🔍"
+    :title "Subscriptions, not prop drilling"
+    :body "Views subscribe to exactly the slice of state they need. No prop chains, no context providers — just a named subscription and a deref."}
+   {:icon "🧩"
+    :title "Framework vs. demo"
+    :body "Every file is labelled. Framework files form the reusable base. Demo files show how to use it. Delete the demos and the architecture stands on its own."}
+   {:icon "📦"
+    :title "Clone and rename"
+    :body "The whole point is that you fork this, rename the namespace root, delete the demo pages, seed your own db keys, and ship a real app — fast."}
+   {:icon "🛠️"
+    :title "Nix-first tooling"
+    :body "A flake.nix devShell pins every tool: JDK, Clojure CLI, Bun, clj-kondo, cljfmt. One 'nix develop' and the environment is fully reproducible."}])
 
 ;; ---------------------------------------------------------------------------
-;; [DEMO] Notification trigger
-;; Demonstrates transient UI state flowing through app-db.
+;; Sections
 ;; ---------------------------------------------------------------------------
 
-(defn- notification-demo []
-  [ui/card {:title    "Notification Demo"
-            :subtitle "Dispatch an event that adds a toast notification to app-db."}
-   [:div {:class "flex flex-col gap-3"}
-    [ui/button {:label    "Send a notification"
+(defn- hero []
+  [:header {:class "py-20 text-center flex flex-col items-center gap-5"}
+   [:div {:class "text-6xl" :aria-hidden "true"} "⚡"]
+   [:h1 {:class "text-5xl font-bold text-gray-100 tracking-tight"}
+    "Clojkstra"]
+   [:p {:class "text-xl text-gray-400 max-w-xl leading-relaxed"}
+    "A ClojureScript + re-frame starter template designed for cloning.
+     Build new SPAs by forking, renaming, and deleting the demo pages."]
+   [:div {:class "flex flex-wrap justify-center gap-3 mt-2"}
+    [ui/badge {:label "ClojureScript" :variant :info}]
+    [ui/badge {:label "re-frame"      :variant :info}]
+    [ui/badge {:label "shadow-cljs"   :variant :default}]
+    [ui/badge {:label "GitHub Pages"  :variant :success}]
+    [ui/badge {:label "Nix devShell"  :variant :default}]]
+   [:div {:class "flex flex-wrap justify-center gap-3 mt-4"}
+    [ui/button {:label    "About →"
+                :variant  :primary
+                :on-click #(routes/navigate! :about)}]
+    [ui/button {:label    "See the template →"
                 :variant  :secondary
-                :on-click #(rf/dispatch
-                            [::events/add-notification
-                             (str "Hello from the home page! 👋  "
-                                  "Sent at " (.toLocaleTimeString (js/Date.)))])}]
-    [:p {:class "text-xs text-gray-400"}
-     "Notifications appear in the bottom-right corner and can be dismissed individually."]]])
+                :on-click #(routes/navigate! :example)}]]])
 
-;; ---------------------------------------------------------------------------
-;; [DEMO] Quick-start cards
-;; Static content pointing contributors at the key extension points.
-;; ---------------------------------------------------------------------------
-
-(def ^:private quick-start-items
-  [{:icon  "📦"
-    :title "app-db"
-    :body  "Seed your domain state in db.cljs. Every key should have a comment."
-    :file  "src/clojkstra/app/db.cljs"}
-   {:icon  "⚡"
-    :title "Events"
-    :body  "Register new event handlers in events.cljs. Use reg-event-fx for side effects."
-    :file  "src/clojkstra/app/events.cljs"}
-   {:icon  "🔍"
-    :title "Subscriptions"
-    :body  "Derive view data in subs.cljs. Layer 2 extracts; layer 3 computes."
-    :file  "src/clojkstra/app/subs.cljs"}
-   {:icon  "🛣️"
-    :title "Routes"
-    :body  "Add new routes to app-routes in routes.cljs and a page component in pages/."
-    :file  "src/clojkstra/app/routes.cljs"}
-   {:icon  "🧩"
-    :title "Components"
-    :body  "Build reusable, prop-driven Reagent components in components/ui.cljs."
-    :file  "src/clojkstra/app/components/ui.cljs"}
-   {:icon  "🔧"
-    :title "Effects"
-    :body  "Register custom side-effect handlers in effects.cljs (HTTP, storage, etc.)."
-    :file  "src/clojkstra/app/effects.cljs"}])
-
-(defn- quick-start-card [{:keys [icon title body file]}]
-  [:div {:class "bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-2
-                 hover:border-indigo-300 hover:shadow-sm transition-all duration-150"}
-   [:div {:class "flex items-center gap-2"}
-    [:span {:class "text-2xl" :aria-hidden "true"} icon]
-    [:h3 {:class "font-semibold text-gray-900 text-sm"} title]]
-   [:p {:class "text-sm text-gray-500 leading-relaxed"} body]
-   [:code {:class "text-xs text-indigo-500 font-mono mt-auto pt-1"} file]])
-
-(defn- quick-start-grid []
-  [:section {:aria-labelledby "qs-heading"}
-   [:h2 {:id "qs-heading" :class "text-xl font-semibold text-gray-800 mb-4"}
-    "Extension Points"]
+(defn- stack-section []
+  [:section {:aria-labelledby "stack-heading"}
+   [:h2 {:id    "stack-heading"
+         :class "text-2xl font-bold text-gray-100 mb-6 text-center"}
+    "The Stack"]
    [:div {:class "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"}
-    (for [item quick-start-items]
-      ^{:key (:title item)}
-      [quick-start-card item])]])
+    (for [{:keys [name desc]} stack]
+      ^{:key name}
+      [:div {:class "bg-gray-900 border border-gray-800 rounded-xl p-5
+                     hover:border-indigo-700 hover:bg-gray-800/60
+                     transition-all duration-150"}
+       [:p {:class "font-semibold text-gray-100 text-sm mb-1"} name]
+       [:p {:class "text-sm text-gray-500 leading-relaxed"} desc]])]])
 
-;; ---------------------------------------------------------------------------
-;; [DEMO] Navigation links
-;; ---------------------------------------------------------------------------
+(defn- principles-section []
+  [:section {:aria-labelledby "principles-heading"}
+   [:h2 {:id    "principles-heading"
+         :class "text-2xl font-bold text-gray-100 mb-6 text-center"}
+    "Design Principles"]
+   [:div {:class "grid grid-cols-1 md:grid-cols-2 gap-5"}
+    (for [{:keys [icon title body]} principles]
+      ^{:key title}
+      [:div {:class "bg-gray-900 border border-gray-800 rounded-xl p-6 flex gap-4
+                     hover:border-indigo-700 transition-all duration-150"}
+       [:span {:class "text-2xl flex-shrink-0 mt-0.5" :aria-hidden "true"} icon]
+       [:div
+        [:h3 {:class "font-semibold text-gray-100 text-sm mb-1"} title]
+        [:p  {:class "text-sm text-gray-500 leading-relaxed"} body]]])]])
 
-(defn- page-links []
-  [:div {:class "flex flex-wrap gap-3 items-center"}
-   [:span {:class "text-sm text-gray-500"} "Explore the demo:"]
-   [ui/button {:label    "About →"
-               :variant  :secondary
-               :size     :sm
-               :on-click #(routes/navigate! :about)}]
-   [ui/button {:label    "Example Page →"
-               :variant  :ghost
-               :size     :sm
-               :on-click #(routes/navigate! :example)}]])
+(defn- quick-start-section []
+  [ui/card {:title    "Bootstrap a new app from this"
+            :subtitle "Five steps from clone to a working, renamed SPA."}
+   [:ol {:class "flex flex-col gap-4 mt-1"}
+    (for [[n step] (map-indexed vector
+                    ["Fork or clone this repo and rename the directory."
+                     "Move src/clojkstra/ to src/your_app/ and do a project-wide find-and-replace: clojkstra.app → your-app.app"
+                     "Update :app-name and :version in db.cljs. Update :init-fn in shadow-cljs.edn."
+                     "Delete pages/home.cljs, pages/about.cljs, pages/example.cljs. Remove their [DEMO] events and subs."
+                     "Add your domain keys to db.cljs, write your first real page in pages/, and ship."])]
+      ^{:key n}
+      [:li {:class "flex gap-4 items-start"}
+       [:span {:class "flex-shrink-0 w-7 h-7 rounded-full bg-indigo-900 text-indigo-300
+                        text-sm font-bold flex items-center justify-center"}
+        (inc n)]
+       [:p {:class "text-sm text-gray-400 leading-relaxed pt-0.5"} step]])]])
 
 ;; ---------------------------------------------------------------------------
 ;; Page root
 ;; ---------------------------------------------------------------------------
 
 (defn page []
-  (let [app-name @(rf/subscribe [::subs/app-name])]
-    [:div {:class "flex flex-col gap-10"}
-
-     ;; Hero
-     [:header {:class "flex flex-col gap-3"}
-      [ui/page-title
-       {:title    (str "Welcome to " app-name)
-        :subtitle "A ClojureScript + re-frame starter template. Clone it, rename it, ship it."}]
-      [page-links]]
-
-     ;; Demo widgets
-     [:section {:class "grid grid-cols-1 md:grid-cols-2 gap-6"
-                :aria-label "Interactive demos"}
-      [counter-demo]
-      [notification-demo]]
-
-     [ui/divider {:label "How this template is organised"}]
-
-     ;; Extension point guide
-     [quick-start-grid]]))
+  [:div {:class "flex flex-col gap-16"}
+   [hero]
+   [ui/divider]
+   [stack-section]
+   [ui/divider]
+   [principles-section]
+   [ui/divider]
+   [quick-start-section]])
