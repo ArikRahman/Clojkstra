@@ -12,6 +12,11 @@ set shell := ["sh", "-c"]
 default:
     @just --list
 
+# Help: print a summary of available just recipes
+help:
+    @echo "Available just recipes:"
+    @just --summary
+
 # ── Dependency management ──────────────────────────────────────────────────────
 
 # Install all bun dependencies

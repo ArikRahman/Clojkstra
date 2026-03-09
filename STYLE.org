@@ -1,0 +1,199 @@
+#+title: Rosé Pine Theme Conversion Style Guide
+#+author: Arik
+#+startup: overview
+#+options: toc:2 num:nil
+
+* Purpose
+This file defines the Rosé Pine theme target for LLM-assisted theme conversion.
+Use it when converting existing themes, configs, CSS, editor themes, or UI token sets into Rosé Pine.
+
+* Rules
+:PROPERTIES:
+:variant: moon
+:output: full-file
+:style: semantic-mapping
+:END:
+
+- Preserve functionality. Only change theme-related values unless a tiny structural change is required for clean theming.
+- Prefer semantic Rosé Pine role mapping over blind hex replacement.
+- Centralize repeated colors into variables or tokens when the target format allows it.
+- Keep contrast readable and hierarchy clear.
+- Preserve comments when reasonable.
+- Be decisive. Do not leave placeholders.
+- Default to =Rosé Pine Moon= unless another variant is explicitly requested.
+
+* Semantic Roles
+These roles come from the Rosé Pine palette guidance and should be used semantically rather than by nearest-color matching. [web:175][web:177]
+
+- =base=: primary background, inactive tabs, sidebars
+- =surface=: low-contrast background atop base, panels, inputs
+- =overlay=: medium-contrast elevated background, popups, dialogs, active tabs
+- =muted=: low-contrast foreground, comments, disabled text, ignored items
+- =subtle=: medium-contrast foreground, punctuation, secondary labels, operators
+- =text=: high-contrast foreground, main readable content
+- =love=: errors, destructive actions
+- =gold=: warnings, caution states
+- =rose=: warm accent, booleans, modified state
+- =pine=: success-ish or green semantic role, functions, renamed state
+- =foam=: informational accent, additions, keys
+- =iris=: links, focus, hints, active accent
+- =highlight-low=: cursorline or low-emphasis selection background
+- =highlight-med=: standard selection background
+- =highlight-high=: borders, separators, stronger emphasis
+
+* Palette
+
+** Rosé Pine
+- base :: =#191724= =rgb(25, 23, 36)= [web:174][web:177]
+- surface :: =#1f1d2e= =rgb(31, 29, 46)= [web:174][web:177]
+- overlay :: =#26233a= =rgb(38, 35, 58)= [web:174][web:177]
+- muted :: =#6e6a86= =rgb(110, 106, 134)= [web:174][web:177]
+- subtle :: =#908caa= =rgb(144, 140, 170)= [web:174][web:177]
+- text :: =#e0def4= =rgb(224, 222, 244)= [web:174][web:177]
+- love :: =#eb6f92= =rgb(235, 111, 146)= [web:174][web:177]
+- gold :: =#f6c177= =rgb(246, 193, 119)= [web:174][web:177]
+- rose :: =#ebbcba= =rgb(235, 188, 186)= [web:174][web:177]
+- pine :: =#31748f= =rgb(49, 116, 143)= [web:174][web:177]
+- foam :: =#9ccfd8= =rgb(156, 207, 216)= [web:174][web:177]
+- iris :: =#c4a7e7= =rgb(196, 167, 231)= [web:174][web:177]
+- highlight-low :: =#21202e= =rgb(33, 32, 46)= [web:177]
+- highlight-med :: =#403d52= =rgb(64, 61, 82)= [web:177]
+- highlight-high :: =#524f67= =rgb(82, 79, 103)= [web:177]
+
+** Rosé Pine Moon
+- base :: =#232136= =rgb(35, 33, 54)= [web:177]
+- surface :: =#2a273f= =rgb(42, 39, 63)= [web:177]
+- overlay :: =#393552= =rgb(57, 53, 82)= [web:177]
+- muted :: =#6e6a86= =rgb(110, 106, 134)= [web:177]
+- subtle :: =#908caa= =rgb(144, 140, 170)= [web:177]
+- text :: =#e0def4= =rgb(224, 222, 244)= [web:177]
+- love :: =#eb6f92= =rgb(235, 111, 146)= [web:177]
+- gold :: =#f6c177= =rgb(246, 193, 119)= [web:177]
+- rose :: =#ea9a97= =rgb(234, 154, 151)= [web:177]
+- pine :: =#3e8fb0= =rgb(62, 143, 176)= [web:199][web:177]
+- foam :: =#9ccfd8= =rgb(156, 207, 216)= [web:199][web:177]
+- iris :: =#c4a7e7= =rgb(196, 167, 231)= [web:199][web:177]
+- highlight-low :: =#2a283e= =rgb(42, 40, 62)= [web:199][web:177]
+- highlight-med :: =#44415a= =rgb(68, 65, 90)= [web:177]
+- highlight-high :: =#56526e= =rgb(86, 82, 110)= [web:177]
+
+** Rosé Pine Dawn
+- base :: =#faf4ed= =rgb(250, 244, 237)= [web:177]
+- surface :: =#fffaf3= =rgb(255, 250, 243)= [web:177]
+- overlay :: =#f2e9e1= =rgb(242, 233, 225)= [web:177]
+- muted :: =#9893a5= =rgb(152, 147, 165)= [web:177]
+- subtle :: =#797593= =rgb(121, 117, 147)= [web:177]
+- text :: =#575279= =rgb(87, 82, 121)= [web:177]
+- love :: =#b4637a= =rgb(180, 99, 122)= [web:177]
+- gold :: =#ea9d34= =rgb(234, 157, 52)= [web:177]
+- rose :: =#d7827e= =rgb(215, 130, 126)= [web:177]
+- pine :: =#286983= =rgb(40, 105, 131)= [web:177]
+- foam :: =#56949f= =rgb(86, 148, 159)= [web:177]
+- iris :: =#907aa9= =rgb(144, 122, 169)= [web:177]
+- highlight-low :: =#f4ede8= =rgb(244, 237, 232)= [web:177]
+- highlight-med :: =#dfdad9= =rgb(223, 218, 217)= [web:177]
+- highlight-high :: =#cecacd= =rgb(206, 202, 205)= [web:177]
+
+* Default Mapping
+Use these semantic mappings when converting an arbitrary theme to Rosé Pine Moon.
+
+- background -> base
+- panel -> surface
+- popup -> overlay
+- primary-text -> text
+- secondary-text -> subtle
+- disabled-text -> muted
+- error -> love
+- warning -> gold
+- success -> pine
+- info -> foam
+- link -> iris
+- focus-ring -> iris
+- selection -> highlight-med
+- border -> highlight-high
+- cursorline -> highlight-low
+
+* LLM Prompt
+#+begin_src text
+Convert the following theme/config/code to Rosé Pine.
+
+Requirements:
+- Default to Rosé Pine Moon unless I explicitly request Rosé Pine or Rosé Pine Dawn.
+- Preserve all non-theme functionality.
+- Change only colors, theme tokens, and theme-related styling structure unless a tiny structural change is required for a clean conversion.
+- Prefer semantic Rosé Pine role mapping over naive nearest-color replacement.
+- Consolidate repeated colors into named variables/tokens if the format supports it.
+- Keep comments when reasonable.
+- Output the fully converted file, not a partial diff.
+- After the converted file, include a short mapping table of old token/color -> new Rosé Pine token/color -> reason.
+- Do not use placeholders.
+- Do not ask clarifying questions unless the input is unreadable.
+
+Use these exact Rosé Pine Moon values:
+base            #232136  rgb(35, 33, 54)
+surface         #2a273f  rgb(42, 39, 63)
+overlay         #393552  rgb(57, 53, 82)
+muted           #6e6a86  rgb(110, 106, 134)
+subtle          #908caa  rgb(144, 140, 170)
+text            #e0def4  rgb(224, 222, 244)
+love            #eb6f92  rgb(235, 111, 146)
+gold            #f6c177  rgb(246, 193, 119)
+rose            #ea9a97  rgb(234, 154, 151)
+pine            #3e8fb0  rgb(62, 143, 176)
+foam            #9ccfd8  rgb(156, 207, 216)
+iris            #c4a7e7  rgb(196, 167, 231)
+highlight-low   #2a283e  rgb(42, 40, 62)
+highlight-med   #44415a  rgb(68, 65, 90)
+highlight-high  #56526e  rgb(86, 82, 110)
+
+Map semantics as:
+background=base
+panel=surface
+popup=overlay
+primary-text=text
+secondary-text=subtle
+disabled-text=muted
+error=love
+warning=gold
+success=pine
+info=foam
+link/focus=iris
+selection=highlight-med
+border=highlight-high
+cursorline=highlight-low
+
+Output format:
+1. Brief summary
+2. Full converted file in one fenced code block
+3. Compact mapping table
+4. Up to 3 caveats
+
+Input:
+[PASTE FILES HERE]
+#+end_src
+
+* CSS Variables
+#+begin_src css
+:root {
+  --rp-base: #232136;
+  --rp-surface: #2a273f;
+  --rp-overlay: #393552;
+  --rp-muted: #6e6a86;
+  --rp-subtle: #908caa;
+  --rp-text: #e0def4;
+  --rp-love: #eb6f92;
+  --rp-gold: #f6c177;
+  --rp-rose: #ea9a97;
+  --rp-pine: #3e8fb0;
+  --rp-foam: #9ccfd8;
+  --rp-iris: #c4a7e7;
+  --rp-highlight-low: #2a283e;
+  --rp-highlight-med: #44415a;
+  --rp-highlight-high: #56526e;
+}
+#+end_src
+
+* Notes
+- Rosé Pine has three official variants: Rosé Pine, Rosé Pine Moon, and Rosé Pine Dawn. [web:177]
+- The role descriptions above are based on the official palette guidance. [web:175][web:177]
+- Formatted color values such as hex and RGB are published in the Rosé Pine ingredients pages and palette repo outputs. [web:174][web:199][web:177]

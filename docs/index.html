@@ -32,6 +32,24 @@
                                 "monospace",
                             ],
                         },
+                        colors: {
+                            // Rosé Pine Moon palette
+                            "rp-base": "#232136",
+                            "rp-surface": "#2a273f",
+                            "rp-overlay": "#393552",
+                            "rp-muted": "#6e6a86",
+                            "rp-subtle": "#908caa",
+                            "rp-text": "#e0def4",
+                            "rp-love": "#eb6f92",
+                            "rp-gold": "#f6c177",
+                            "rp-rose": "#ea9a97",
+                            "rp-pine": "#3e8fb0",
+                            "rp-foam": "#9ccfd8",
+                            "rp-iris": "#c4a7e7",
+                            "rp-highlight-low": "#2a283e",
+                            "rp-highlight-med": "#44415a",
+                            "rp-highlight-high": "#56526e",
+                        },
                     },
                 },
             };
@@ -52,14 +70,14 @@
                 align-items: center;
                 justify-content: center;
                 min-height: 100vh;
-                background: #0f0f0f;
+                background: #232136;
             }
             #app:empty::after {
                 content: "";
                 width: 2.5rem;
                 height: 2.5rem;
-                border: 3px solid #2d2d4e;
-                border-top-color: #818cf8;
+                border: 3px solid #44415a;
+                border-top-color: #c4a7e7;
                 border-radius: 50%;
                 animation: spin 0.7s linear infinite;
             }
@@ -70,7 +88,7 @@
             }
         </style>
     </head>
-    <body class="bg-gray-950 text-gray-100 font-sans antialiased">
+    <body class="bg-rp-base text-rp-text font-sans antialiased">
         <!-- React/Reagent mounts here — do not put content inside this div -->
         <div id="app"></div>
 

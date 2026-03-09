@@ -60,6 +60,7 @@ flake.nix             Nix devShell (includes Rust + Tauri system libs)
 #+END_SRC
 
 * Manus Workflow and VSDD
+You must use Manus workflow for complex tasks! Also, if it takes longer than ~2 minutes, use Manus!
 The Problem
 
 Claude Code (and most AI agents) suffer from:
