@@ -61,7 +61,7 @@
  ;; Only format ClojureScript source; skip compiled output and cache dirs.
  :paths ["src"]
 
- :file-pattern #"\.clj[sc]?$"
+ ;; :file-pattern removed — using cljfmt default
 
  ;; Exclude generated or vendored files if any are added in future.
  :exclude-files []}

@@ -1,5 +1,5 @@
 (ns clojkstra.app.effects
-  "Custom re-frame effect handlers for Clojkstra.
+    "Custom re-frame effect handlers for Clojkstra.
    [FRAMEWORK FILE] — registers side-effectful handlers that event handlers
    can invoke via the :effects map returned from reg-event-fx.
 
@@ -14,9 +14,9 @@
      Add new effects here when your app needs to reach outside of app-db
      (HTTP, WebSocket, native APIs, analytics, etc.).
      Keep each effect handler a pure side-effect function — no db reads."
-  (:require
-   [re-frame.core       :as rf]
-   [clojkstra.app.routes :as routes]))
+    (:require
+     [re-frame.core       :as rf]
+     [clojkstra.app.routes :as routes]))
 
 ;; ---------------------------------------------------------------------------
 ;; [FRAMEWORK] :navigate
@@ -31,8 +31,8 @@
  :navigate
  (fn [{:keys [handler params]}]
    (if params
-     (routes/navigate! handler params)
-     (routes/navigate! handler))))
+       (routes/navigate! handler params)
+       (routes/navigate! handler))))
 
 ;; ---------------------------------------------------------------------------
 ;; [FRAMEWORK] :set-title
@@ -66,27 +66,27 @@
  :local-storage
  (fn [{:keys [op key value on-success]}]
    (case op
-     :set
-     (try
-       (.setItem js/localStorage key (.stringify js/JSON (clj->js value)))
-       (catch :default e
-         (.warn js/console "[clojkstra] localStorage :set failed" e)))
+         :set
+         (try
+          (.setItem js/localStorage key (.stringify js/JSON (clj->js value)))
+          (catch :default e
+                 (.warn js/console "[clojkstra] localStorage :set failed" e)))
 
-     :get
-     (when on-success
-       (try
-         (let [raw  (.getItem js/localStorage key)
-               data (when raw (js->clj (.parse js/JSON raw) :keywordize-keys true))]
-           (rf/dispatch (conj on-success data)))
-         (catch :default e
-           (.warn js/console "[clojkstra] localStorage :get failed" e)
-           (rf/dispatch (conj on-success nil)))))
+         :get
+         (when on-success
+               (try
+                (let [raw  (.getItem js/localStorage key)
+                      data (when raw (js->clj (.parse js/JSON raw) :keywordize-keys true))]
+                     (rf/dispatch (conj on-success data)))
+                (catch :default e
+                       (.warn js/console "[clojkstra] localStorage :get failed" e)
+                       (rf/dispatch (conj on-success nil)))))
 
-     :remove
-     (.removeItem js/localStorage key)
+         :remove
+         (.removeItem js/localStorage key)
 
      ;; default
-     (.warn js/console "[clojkstra] :local-storage unknown op:" op))))
+         (.warn js/console "[clojkstra] :local-storage unknown op:" op))))
 
 ;; ---------------------------------------------------------------------------
 ;; [FRAMEWORK] :log
@@ -108,13 +108,13 @@
        :or   {level :info}}]
    (let [prefix (str "[clojkstra] " msg)
          log-fn (case level
-                  :debug  (.-debug  js/console)
-                  :warn   (.-warn   js/console)
-                  :error  (.-error  js/console)
-                  (.-log js/console))]
-     (if data
-       (.call log-fn js/console prefix (clj->js data))
-       (.call log-fn js/console prefix)))))
+                      :debug  (.-debug  js/console)
+                      :warn   (.-warn   js/console)
+                      :error  (.-error  js/console)
+                      (.-log js/console))]
+        (if data
+            (.call log-fn js/console prefix (clj->js data))
+            (.call log-fn js/console prefix)))))
 
 ;; ---------------------------------------------------------------------------
 ;; [FRAMEWORK] :set-timeout

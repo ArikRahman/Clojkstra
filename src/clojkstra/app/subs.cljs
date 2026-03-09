@@ -1,5 +1,5 @@
 (ns clojkstra.app.subs
-  (:require [re-frame.core :as rf]))
+    (:require [re-frame.core :as rf]))
 
 (rf/reg-sub ::current-route (fn [db _] (:current-route db)))
 (rf/reg-sub ::loading?      (fn [db _] (:loading? db)))
@@ -12,9 +12,9 @@
 (rf/reg-sub ::features      :<- [::config] (fn [c _] (:features c)))
 
 (rf/reg-sub ::feature-enabled?
-  :<- [::features]
-  (fn [features [_ flag]] (boolean (get features flag))))
+            :<- [::features]
+            (fn [features [_ flag]] (boolean (get features flag))))
 
 (rf/reg-sub ::current-handler
-  :<- [::current-route]
-  (fn [route _] (:handler route)))
+            :<- [::current-route]
+            (fn [route _] (:handler route)))

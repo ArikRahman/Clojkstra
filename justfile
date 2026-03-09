@@ -4,7 +4,6 @@
 #
 # Tauri recipes require Rust/Cargo in PATH.
 # In the Nix devShell (nix develop) these are provided automatically.
-
 # ── Settings ──────────────────────────────────────────────────────────────────
 
 set shell := ["sh", "-c"]
@@ -20,8 +19,8 @@ install:
     bun install
 
 # ── Development ────────────────────────────────────────────────────────────────
-
 # Start the shadow-cljs dev server with hot reload (http://localhost:8080)
+
 # Kills any stale watcher first so you never hit "already started".
 dev:
     @pkill -f "shadow.cljs.devtools.cli" 2>/dev/null && echo "Stopped stale shadow-cljs process." || true
@@ -85,36 +84,40 @@ check: lint fmt-check
 ci: check build
 
 # ── Tauri ─────────────────────────────────────────────────────────────────────
-
 # Start the Tauri desktop app in development mode with hot reload.
 # shadow-cljs watch is launched automatically via beforeDevCommand in tauri.conf.json.
+
 # Runs inside nix develop so cargo, pkg-config, and GTK libs are all on PATH.
+tauri-nix-environment-init:
+    nix develop --command
+
 tauri-dev:
-    nix develop --command cargo-tauri dev
+    cargo-tauri dev
 
 # Build the Tauri desktop app in release mode and generate installers.
 # The ClojureScript release build is run automatically via beforeBuildCommand.
+
 # Runs inside nix develop so cargo, pkg-config, and GTK libs are all on PATH.
 tauri-build:
-    nix develop --command cargo-tauri build
+    cargo-tauri build
 
 # Show Tauri environment info (Rust, OS, relevant config)
 tauri-info:
-    nix develop --command cargo-tauri info
+    cargo-tauri info
 
 # ── Deploy ────────────────────────────────────────────────────────────────────
-
 # Build, commit all changes (including docs/), and push to GitHub Pages.
 # GitHub Pages serves docs/ from the main branch.
 # Fetches + rebases onto remote main first so the bookmark never goes sideways.
 # Skips the commit step if the working copy has no changes.
 # Usage: just deploy           (uses default message "deploy")
-#        just deploy "message"
+
+# just deploy "message"
 deploy msg="deploy": build
     jj git fetch
     jj rebase -d main@origin
     @if jj diff --summary | grep -q .; then \
-        jj commit -m "{{msg}}"; \
+        jj commit -m "{{ msg }}"; \
     else \
         echo "Nothing changed — skipping commit, proceeding to push."; \
     fi
@@ -163,18 +166,20 @@ diff:
 
 # Show diff for a specific file — usage: just fdiff src/clojkstra/app/events.cljs
 fdiff file:
-    jj diff -- "{{file}}"
+    jj diff -- "{{ file }}"
 
 # Set the description of the current working copy change
+
 # Usage: just describe "what I changed"
 describe message:
-    jj describe -m "{{message}}"
+    jj describe -m "{{ message }}"
 
 # Finalise the current change and open a new empty child change.
 # Advances the main bookmark to the committed change.
+
 # Usage: just commit "what I changed"
 commit message:
-    jj commit -m "{{message}}"
+    jj commit -m "{{ message }}"
     jj bookmark set main --revision @-
 
 # Push the main bookmark to origin
@@ -187,21 +192,23 @@ fetch:
     jj log --limit 5
 
 # One-step: commit, advance bookmark, and push to origin.
+
 # Usage: just snap "what I changed"
 snap message:
     jj git fetch
     jj rebase -d main@origin
-    jj commit -m "{{message}}"
+    jj commit -m "{{ message }}"
     jj bookmark set main --revision @-
     jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
 
 # One-step: run ci checks, commit, advance bookmark, push.
+
 # Usage: just ship "what I changed"
 ship message: ci
     jj git fetch
     jj rebase -d main@origin
-    jj commit -m "{{message}}"
+    jj commit -m "{{ message }}"
     jj bookmark set main --revision @-
     jj bookmark track main@origin 2>/dev/null || true
     jj git push --bookmark main
