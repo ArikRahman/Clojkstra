@@ -88,17 +88,19 @@ ci: check build
 
 # Start the Tauri desktop app in development mode with hot reload.
 # shadow-cljs watch is launched automatically via beforeDevCommand in tauri.conf.json.
+# Runs inside nix develop so cargo, pkg-config, and GTK libs are all on PATH.
 tauri-dev:
-    cargo-tauri dev
+    nix develop --command cargo-tauri dev
 
 # Build the Tauri desktop app in release mode and generate installers.
 # The ClojureScript release build is run automatically via beforeBuildCommand.
+# Runs inside nix develop so cargo, pkg-config, and GTK libs are all on PATH.
 tauri-build:
-    cargo-tauri build
+    nix develop --command cargo-tauri build
 
 # Show Tauri environment info (Rust, OS, relevant config)
 tauri-info:
-    cargo-tauri info
+    nix develop --command cargo-tauri info
 
 # ── Deploy ────────────────────────────────────────────────────────────────────
 

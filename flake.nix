@@ -39,10 +39,10 @@
           libayatana-appindicator
           librsvg
           xdotool            # optional but handy for window automation in tests
-          xorg.libX11
-          xorg.libXcursor
-          xorg.libXrandr
-          xorg.libXi
+          libx11
+          libxcursor
+          libxrandr
+          libxi
         ];
 
       in
