@@ -1,8 +1,10 @@
 # core Specification
 
 ## Purpose
-TBD - created by archiving change integrate-openspec. Update Purpose after archive.
+This specification defines the core workflow, architecture rules, and coding conventions for the Clojkstra repository. It acts as the source-of-truth for agent and developer behavior, integrating OpenSpec workflows with strict framework guidelines.
+
 ## Requirements
+
 ### Requirement: OpenSpec Change Creation
 For any non-trivial task, feature addition, behavior change, or architectural modification, developers MUST create an OpenSpec change under `openspec/changes/<change-id>/` before beginning implementation.
 
@@ -33,3 +35,38 @@ The repository MUST include `.github/` configuration and skills to support AI-na
 #### Scenario: Initializing OpenSpec
 The developer runs `openspec init --tools github-copilot` to set up the necessary tooling in the repository.
 
+### Requirement: Runtime and Package Management
+All JavaScript dependencies and scripts MUST be managed using `bun` or `bunx`. The use of `npm`, `node`, `yarn`, or `npx` is strictly forbidden.
+
+#### Scenario: Adding a JS Dependency
+A developer needs a new JS package and installs it using `bun add <package>`, ensuring it is FOSS-licensed and compatible with ClojureScript.
+
+### Requirement: Task Running
+Developers and agents MUST use `just` for all command-line operations (e.g., `just dev`, `just build`, `just check`). Raw `bun`, `clj-kondo`, or `cargo-tauri` commands MUST NOT be constructed unless a `just` recipe does not exist.
+
+#### Scenario: Starting the Development Server
+To start the app, the developer runs `just dev` rather than invoking `shadow-cljs` directly.
+
+### Requirement: Version Control
+The repository uses `jujutsu` (`jj`) for version control. Raw `git commit`, `git add`, or `git checkout` commands MUST NOT be used. Developers MUST use `just` recipes (`just commit`, `just snap`, `just ship`) or `jj` commands to manage working copies.
+
+#### Scenario: Committing Work
+After completing a feature, the developer runs `just commit "Added new feature"` to finalize the change and advance the main bookmark.
+
+### Requirement: re-frame Architecture
+Views MUST NOT contain side effects or direct database reads. State mutations MUST occur via `reg-event-db` or `reg-event-fx`. Side effects MUST be handled by registered `reg-fx` handlers in `effects.cljs`.
+
+#### Scenario: Fetching Data on Button Click
+A view dispatches an event on click. The event handler uses `reg-event-fx` to trigger a custom effect, which performs the external call and dispatches a success event with the result.
+
+### Requirement: Tauri Integration
+The frontend MUST communicate with the Rust backend exclusively through Tauri commands and events. Direct calls to `js/window.__TAURI__` from views or event handlers are forbidden and MUST be routed through a `reg-fx` effect in `effects.cljs` (e.g., `::invoke-tauri`).
+
+#### Scenario: Invoking a Native Command
+An event handler returns `{::effects/invoke-tauri {:command "my_cmd" ...}}`. The registered effect handler safely interacts with the Tauri API.
+
+### Requirement: Namespace Conventions
+ClojureScript files MUST mirror their namespace using hyphens for namespaces and underscores for file paths (e.g., `src/clojkstra/app/pages/home.cljs` -> `clojkstra.app.pages.home`). Event and subscription keywords MUST use namespaced keywords (e.g., `::initialize-db`).
+
+#### Scenario: Registering a New Event
+In `events.cljs`, an event is registered as `(rf/reg-event-db ::my-event ...)`, ensuring it does not collide with other namespaces.
