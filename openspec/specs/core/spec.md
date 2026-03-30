@@ -70,3 +70,21 @@ ClojureScript files MUST mirror their namespace using hyphens for namespaces and
 
 #### Scenario: Registering a New Event
 In `events.cljs`, an event is registered as `(rf/reg-event-db ::my-event ...)`, ensuring it does not collide with other namespaces.
+
+### Requirement: Routing
+The repository MUST use the internal hash-based router located in `routes.cljs`. External routing dependencies (e.g., `bidi`, `pushy`) MUST NOT be used to keep the project lightweight.
+
+#### Scenario: Adding a Route
+A developer needs to add a new page. They define the route in `routes.cljs` rather than importing an external routing library.
+
+### Requirement: Deployment and Output
+The compiled ClojureScript output MUST be directed to the `docs/` directory to support GitHub Pages deployment. Asset paths MUST be relative (e.g., `"cljs-out"`) to support subdirectory hosting.
+
+#### Scenario: Building for Release
+When `just build` is run, `shadow-cljs` compiles the application into `docs/cljs-out/main.js`, which is served by `docs/index.html`.
+
+### Requirement: Framework vs. Demo Files
+Files are conceptually split into Framework and Demo. Framework files (e.g., `core.cljs`, `db.cljs`) MUST be modified carefully. Demo files (e.g., `pages/home.cljs`) are safe to delete. Developers MUST NOT break framework files to fix a demo problem; instead, delete or replace the demo.
+
+#### Scenario: Cleaning up Demo Content
+A developer starts a new project from the template. They delete `pages/home.cljs` and `pages/about.cljs` without modifying the core `views.cljs` architecture unnecessarily.
