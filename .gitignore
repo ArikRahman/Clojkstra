@@ -110,3 +110,4 @@ config.local.edn
 .clj-kondo
 npm-debug.log*
 bun-debug.log*
+.aider*
