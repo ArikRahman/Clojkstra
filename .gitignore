@@ -111,3 +111,5 @@ config.local.edn
 npm-debug.log*
 bun-debug.log*
 .aider*
+kami/assets/demos/demo-kaku.pdf
+# the pdf file is too big
