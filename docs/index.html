@@ -1,9 +1,8 @@
 <!doctype html>
-<html lang="en" class="dark" style="color-scheme: dark">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="color-scheme" content="dark" />
         <meta
             name="description"
             content="Clojkstra — ClojureScript + re-frame starter template"
@@ -21,92 +20,78 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
-                darkMode: "class",
                 theme: {
                     extend: {
                         fontFamily: {
                             sans: ["Inter", "system-ui", "sans-serif"],
+                            serif: [
+                                "Charter",
+                                "Georgia",
+                                "Palatino",
+                                "Times New Roman",
+                                "serif",
+                            ],
                             mono: [
                                 "JetBrains Mono",
                                 "ui-monospace",
                                 "monospace",
                             ],
                         },
-                        // -------------------------------------------------------
-                        // Semantic color aliases — Layer 1 of the theme system.
-                        //
-                        // These names express INTENT, not palette values.
-                        // All values point to CSS custom properties defined below,
-                        // so the entire palette can be swapped (e.g. Moon → Dawn)
-                        // by changing only the :root block — zero component edits.
-                        //
-                        // Palette layer (CSS vars) → Semantic layer (these aliases)
-                        //   → Component layer (theme.cljs token maps)
-                        // -------------------------------------------------------
                         colors: {
                             // Backgrounds
-                            base: "var(--rp-base)", // primary app bg
-                            surface: "var(--rp-surface)", // card / panel bg
-                            overlay: "var(--rp-overlay)", // popup / badge / input bg
+                            base: "var(--kami-parchment)", // primary app bg
+                            surface: "var(--kami-ivory)", // card / panel bg
+                            overlay: "var(--kami-warm-sand)", // popup / badge / input bg
 
                             // Foregrounds
-                            "on-base": "var(--rp-text)", // primary text (on base or surface)
-                            subtle: "var(--rp-subtle)", // secondary text, ghost controls
-                            muted: "var(--rp-muted)", // disabled, placeholder, captions
+                            "on-base": "var(--kami-near-black)", // primary text (on base or surface)
+                            subtle: "var(--kami-dark-warm)", // secondary text, ghost controls
+                            muted: "var(--kami-olive)", // disabled, placeholder, captions
 
                             // Structure
-                            edge: "var(--rp-highlight-high)", // borders, separators
-                            selection: "var(--rp-highlight-med)", // hover fill, selected bg
-                            lo: "var(--rp-highlight-low)", // cursorline, low-emphasis bg
+                            edge: "var(--kami-border)", // borders, separators
+                            selection: "var(--kami-border-soft)", // hover fill, selected bg
+                            lo: "var(--kami-warm-sand)", // cursorline, low-emphasis bg
 
                             // Accents
-                            accent: "var(--rp-iris)", // primary interactive accent, links, focus
-                            "accent-hi": "var(--rp-foam)", // accent hover / info body text
+                            accent: "var(--kami-brand)", // primary interactive accent, links, focus
+                            "accent-hi": "var(--kami-brand-light)", // accent hover / info body text
 
-                            // Semantic status
-                            danger: "var(--rp-love)", // error, destructive actions
-                            warn: "var(--rp-gold)", // warnings, caution
-                            ok: "var(--rp-pine)", // success, affirmative
-                            "info-hi": "var(--rp-foam)", // info alert body text
-
-                            // Extras (available for future use)
-                            rose: "var(--rp-rose)", // modified state, booleans
+                            // Semantic status (approximated for Kami)
+                            danger: "#c96442", // error
+                            warn: "#d4a055", // warnings
+                            ok: "#507a55", // success
+                            "info-hi": "var(--kami-brand-light)", // info alert body text
                         },
                     },
                 },
             };
         </script>
 
-        <!-- Inter + JetBrains Mono from Google Fonts -->
+        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
             rel="stylesheet"
         />
 
         <style>
-            /* ----------------------------------------------------------------
-             * Rosé Pine Moon palette — single source of truth.
-             * To switch variants (e.g. to Rosé Pine Dawn), change only these
-             * values. Every semantic alias and every component updates for free.
-             * ---------------------------------------------------------------- */
             :root {
-                --rp-base: #232136;
-                --rp-surface: #2a273f;
-                --rp-overlay: #393552;
-                --rp-muted: #6e6a86;
-                --rp-subtle: #908caa;
-                --rp-text: #e0def4;
-                --rp-love: #eb6f92;
-                --rp-gold: #f6c177;
-                --rp-rose: #ea9a97;
-                --rp-pine: #3e8fb0;
-                --rp-foam: #9ccfd8;
-                --rp-iris: #c4a7e7;
-                --rp-highlight-low: #2a283e;
-                --rp-highlight-med: #44415a;
-                --rp-highlight-high: #56526e;
+                --kami-brand: #1b365d;
+                --kami-brand-light: #2d5a8a;
+
+                --kami-parchment: #f5f4ed;
+                --kami-ivory: #faf9f5;
+                --kami-warm-sand: #e8e6dc;
+
+                --kami-near-black: #141413;
+                --kami-dark-warm: #3d3d3a;
+                --kami-olive: #504e49;
+                --kami-stone: #6b6a64;
+
+                --kami-border: #e8e6dc;
+                --kami-border-soft: #e5e3d8;
             }
 
             /* Prevent flash of unstyled content while ClojureScript loads */
@@ -115,14 +100,14 @@
                 align-items: center;
                 justify-content: center;
                 min-height: 100vh;
-                background: var(--rp-base);
+                background: var(--kami-parchment);
             }
             #app:empty::after {
                 content: "";
                 width: 2.5rem;
                 height: 2.5rem;
-                border: 3px solid var(--rp-highlight-med);
-                border-top-color: var(--rp-iris);
+                border: 3px solid var(--kami-border);
+                border-top-color: var(--kami-brand);
                 border-radius: 50%;
                 animation: spin 0.7s linear infinite;
             }
@@ -133,7 +118,7 @@
             }
         </style>
     </head>
-    <body class="bg-base text-on-base font-sans antialiased">
+    <body class="bg-base text-on-base font-serif antialiased">
         <!-- React/Reagent mounts here — do not put content inside this div -->
         <div id="app"></div>
 

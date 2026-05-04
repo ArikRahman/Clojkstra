@@ -14,7 +14,8 @@ Must read until end! If you're AI, load all this entire file into context.
 - **Bun** — the JS runtime and package manager. Never use `npm` or `node`. Always use `bun` or `bunx`.
 - **Clojure CLI** (`clojure` / `clj`) — used by shadow-cljs for classpath resolution from `deps.edn`
 - **re-frame** — all state lives in a single `app-db` map; mutations happen only through registered event handlers; views read only through subscriptions
-- **just** use justfile for easy seamless cli operations
+- **just** use justfile for easy seamless cli operations. agent should read justfile and load into context
+- **openspec** use openspec during implementation for spec management
 
 # Repo layout
 
