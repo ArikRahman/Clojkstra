@@ -1,7 +1,8 @@
 {:source-paths ["src"]
 
  :dependencies [[reagent "2.0.1"]
-                [re-frame "1.4.3"]]
+                [re-frame "1.4.3"]
+                [datascript "1.5.4"]]
 
  :dev-http {8080 "docs"}
 

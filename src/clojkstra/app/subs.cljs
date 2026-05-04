@@ -1,11 +1,19 @@
 (ns clojkstra.app.subs
-    (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [datascript.core :as d]))
 
 (rf/reg-sub ::current-route (fn [db _] (:current-route db)))
 (rf/reg-sub ::loading?      (fn [db _] (:loading? db)))
 (rf/reg-sub ::error         (fn [db _] (:error db)))
 (rf/reg-sub ::config        (fn [db _] (:config db)))
 (rf/reg-sub ::notifications (fn [db _] (:notifications db)))
+
+(rf/reg-sub ::datascript-db (fn [db _] (:datascript/db db)))
+
+(rf/reg-sub ::query
+            :<- [::datascript-db]
+            (fn [ds-db [_ query & args]]
+              (apply d/q query ds-db args)))
 
 (rf/reg-sub ::app-name      :<- [::config] (fn [c _] (:app-name c)))
 (rf/reg-sub ::version       :<- [::config] (fn [c _] (:version c)))

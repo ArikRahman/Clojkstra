@@ -28,7 +28,7 @@ install:
 
 # Kills any stale watcher first so you never hit "already started".
 dev:
-    @pkill -f "shadow.cljs.devtools.cli" 2>/dev/null && echo "Stopped stale shadow-cljs process." || true
+    #@pkill -f "shadow.cljs.devtools.cli" 2>/dev/null && echo "Stopped stale shadow-cljs process." || true
     bun run dev
 
 # Open the local dev site in the default browser
@@ -154,6 +154,36 @@ status:
     @echo ""
     @echo "── shadow-cljs cache ─────────────────────────────────────────────"
     @ls .shadow-cljs/ 2>/dev/null && echo "  (cache present)" || echo "  (no cache)"
+
+# ── OpenSpec ──────────────────────────────────────────────────────────────────
+
+# Create a new OpenSpec change
+os-new name:
+    openspec new change "{{ name }}"
+
+# Generate proposal instructions for an OpenSpec change
+os-proposal name:
+    openspec instructions proposal --change "{{ name }}"
+
+# Generate design instructions for an OpenSpec change
+os-design name:
+    openspec instructions design --change "{{ name }}"
+
+# Generate specs instructions for an OpenSpec change
+os-specs name:
+    openspec instructions specs --change "{{ name }}"
+
+# Generate task instructions for an OpenSpec change
+os-tasks name:
+    openspec instructions tasks --change "{{ name }}"
+
+# Show OpenSpec status for a change
+os-status name:
+    openspec status --change "{{ name }}"
+
+# Archive a completed OpenSpec change and update living specs
+os-archive name:
+    echo y | openspec archive "{{ name }}"
 
 # ── Version control (jujutsu) ─────────────────────────────────────────────────
 
