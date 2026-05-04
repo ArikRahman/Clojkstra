@@ -132,6 +132,14 @@ deploy msg="deploy": build
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
 
+# Set project version across package.json, Cargo.toml, tauri.conf.json, and db.cljs
+version new_version:
+    sed -i 's/"version": ".*"/"version": "{{ new_version }}"/' package.json
+    sed -i 's/"version": ".*"/"version": "{{ new_version }}"/' src-tauri/tauri.conf.json
+    sed -i '0,/version = ".*"/s/version = ".*"/version = "{{ new_version }}"/' src-tauri/Cargo.toml
+    sed -i 's/:version  ".*"/:version  "{{ new_version }}"/' src/clojkstra/app/db.cljs
+    @echo "Version updated to {{ new_version }}"
+
 # Count lines of ClojureScript source
 loc:
     @find src -name "*.cljs" | xargs wc -l | tail -1

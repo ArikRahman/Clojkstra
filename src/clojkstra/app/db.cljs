@@ -8,5 +8,5 @@
    :notifications []
    :datascript/db (d/empty-db)
    :config        {:app-name "Clojkstra"
-                   :version  "0.1.0"
+                   :version  "0.1.1"
                    :features {:example-feature true}}})
