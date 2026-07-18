@@ -13,7 +13,12 @@ Must read until end! If you're AI, load all this entire file into context.
 - **shadow-cljs** — the build tool; config is `shadow-cljs.edn`
 - **Bun** — the JS runtime and package manager. Never use `npm` or `node`. Always use `bun` or `bunx`.
 - **Clojure CLI** (`clojure` / `clj`) — used by shadow-cljs for classpath resolution from `deps.edn`
-- **re-frame** — all state lives in a single `app-db` map; mutations happen only through registered event handlers; views read only through subscriptions
+- **Re-frame** — - This app uses re-frame for UI/event architecture and DataScript as the in-memory database.
+- Treat DataScript as the source of truth for domain data; query it in subscriptions or dedicated query functions.
+- Use re-frame events (`reg-event-*`) to transact changes into DataScript and trigger side effects.
+- Use re-frame subscriptions (`reg-sub` / flows) to derive UI data by querying DataScript, not by hand-wiring component state.
+- Do not bypass re-frame or DataScript with ad hoc atoms or direct React/DOM state; extend the existing event/subscription + query pipelines instead.
+- **DataScript** — all state is managed in a DataScript database; queries and transactions are used for state management, replacing the traditional `app-db`
 - **just** use justfile for easy seamless cli operations. agent should read justfile and load into context
 - **openspec** use openspec during implementation for spec management
 - **kami** use kami folder (read-only) for style guide and design inspiration
@@ -23,7 +28,7 @@ Must read until end! If you're AI, load all this entire file into context.
 ```text
 src/clojkstra/app/
   core.cljs           entry point — init, hot-reload, mount       [FRAMEWORK]
-  db.cljs             app-db schema and default state             [FRAMEWORK]
+  db.cljs             datascript schema and default state             [FRAMEWORK]
   events.cljs         all re-frame event handlers                 [FRAMEWORK]
   subs.cljs           all re-frame subscriptions                  [FRAMEWORK]
   routes.cljs         hash router (no external deps)              [FRAMEWORK]
@@ -334,7 +339,7 @@ Use `openspec status --change feature-name` to view artifact completion status.
 
 # Commands
 
-Always use `just`. Never construct raw `bun`, `clj-kondo`, `cljfmt`, or `cargo-tauri` invocations unless `just` has no recipe for what you need.
+Always use `just`. Never construct raw `bun`, `clj-kondo`, `cljfmt`, or `cargo-tauri` invocations unless `just` has no recipe for what you need. Here are some examples but theres more in the justfile.
 
 | Recipe                | What it does                                               |
 |-----------------------+-----------------------------------------------------------|
@@ -362,13 +367,13 @@ Always use `just`. Never construct raw `bun`, `clj-kondo`, `cljfmt`, or `cargo-t
 | `just snap "msg"`     | Commit + advance bookmark + push                          |
 | `just ship "msg"`     | ci + commit + advance bookmark + push                     |
 | `just deploy "msg"`   | build + commit + advance bookmark + push                  |
-| `just abandon`        | Abandon current empty working copy change                 |
-
+| `just abandon`        | Abandon current empty wor...                |
+there is more, must read the @justfile for it
 # Tauri integration
 
 ## Architecture
 
-Clojkstra runs as a Tauri v2 desktop app.  The architecture is a strict two-layer split:
+Clojkstra can also be deployed as a Tauri v2 desktop app.  The architecture is a strict two-layer split:
 
 - **Frontend** — the existing ClojureScript + re-frame SPA, compiled by shadow-cljs into `docs/cljs-out/main.js` and served from `docs/index.html`.  In dev mode Tauri points its webview at the shadow-cljs dev server (`http://localhost:8080`).  In release mode it bundles `docs/` directly.
 - **Backend** — a minimal Rust host process in `src-tauri/`.  It owns the native window, OS integrations, and any privileged operations (filesystem, shell, notifications, etc.) that the webview cannot do.  The frontend communicates with it exclusively through Tauri commands and events.

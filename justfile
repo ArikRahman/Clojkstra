@@ -95,7 +95,7 @@ ci: check build
 # Runs inside nix develop so cargo, pkg-config, and GTK libs are all on PATH.
 tauri-nix-environment-init:
     nix develop --command
-
+# prefix this command below with nix develop --command for it to work with dependencies everytime
 tauri-dev:
     cargo-tauri dev
 

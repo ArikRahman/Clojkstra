@@ -13,9 +13,9 @@
 
 (def ^:private stack
   [{:name "ClojureScript" :desc "Compiled, functional, lisp on the browser"}
-   {:name "re-frame"      :desc "Predictable state via events and subscriptions"}
+   {:name "Re-frame"      :desc "Predictable state via events and subscriptions"}
    {:name "Reagent"       :desc "Minimal React wrapper with ClojureScript idioms"}
-   {:name "shadow-cljs"   :desc "Fast, deps.edn-native build tool"}
+   {:name "Datascript"   :desc "An immutable in-memory database and Datalog query engine"}
    {:name "Nix"   :desc "Declarative package manager and build tool, combined with Justfiles"}
    {:name "Bun"           :desc "Fast JS runtime — no npm, no node"}])
 
